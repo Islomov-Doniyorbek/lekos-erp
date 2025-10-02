@@ -1,0 +1,16 @@
+{
+    "customer": [
+        {
+            "id": 0,
+            "name": "Uilson", 
+            "phone": "88 898 89 89", 
+            "about": "maktab"
+        },
+        {
+            "id": 1,
+            "name": "Avaz", 
+            "phone": "99 999 89 89", 
+            "about": "teatr"
+        }
+    ]
+}
