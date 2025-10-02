@@ -47,20 +47,20 @@ const SideBar = () => {
             path: "/stock",
             count: fakturaCount
         },
-        {
-            id:1,
-            ico: <FaUser/>,
-            title: "Mijoz",
-            path: "/customer",
-            count: null
-        },
-        {
-            id:2,
-            ico: <FaShippingFast/>,
-            title: "Yetkazib beruvchi",
-            path: "/suplier",
-            count: null
-        },
+        // {
+        //     id:1,
+        //     ico: <FaUser/>,
+        //     title: "Mijoz",
+        //     path: "/customer",
+        //     count: null
+        // },
+        // {
+        //     id:2,
+        //     ico: <FaShippingFast/>,
+        //     title: "Yetkazib beruvchi",
+        //     path: "/suplier",
+        //     count: null
+        // },
     ]
 
     
