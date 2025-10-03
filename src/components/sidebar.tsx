@@ -1,8 +1,9 @@
 'use client'
 
+import api from '@/app/auth';
 import { useM } from '@/app/context';
 import Link from 'next/link';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FaShippingFast, FaUser } from 'react-icons/fa';
 import { FaBoxArchive} from 'react-icons/fa6';
 import { GiBuyCard } from 'react-icons/gi';
@@ -16,7 +17,7 @@ interface sidebarProps {
     count: number | null
 }
 const SideBar = () => {
-    const {toggleMenu, isOpen, bg2, txt, fakturaCount} = useM()
+    const {toggleMenu, isOpen, bg2, txt, fakturaCount, setFakturaCountQuant} = useM()
 
     const sideIcons:sidebarProps[] = [
         {
@@ -62,7 +63,27 @@ const SideBar = () => {
         //     count: null
         // },
     ]
+    useEffect(()=>{
+        const getFaktura = async ()=>{
+            try{
+                const res = await api.get("https://fast-simple-crm.onrender.com/api/v1/documents/invoices/with-total");
 
+                let i = 0;
+                res.data.forEach(fk => {
+                if (fk.open_amount != 0) {
+                    i++;
+                    console.log(fk);
+                    
+                }
+                });
+                setFakturaCountQuant(i)
+            }catch(error){
+                console.log(error);
+                
+            }
+        }
+        getFaktura()
+    }, [])
     
     console.log(fakturaCount);
     

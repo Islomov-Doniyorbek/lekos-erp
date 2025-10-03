@@ -174,7 +174,7 @@ const Purchase = () => {
             counterparty_data: {
               type: "supplier",
               name: form.supplier,
-              tin: form.stir || "000000000"
+              tin: form.stir || null
             },
             contract_data: {
               type: "purchase",

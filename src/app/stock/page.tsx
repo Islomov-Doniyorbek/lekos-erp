@@ -33,12 +33,14 @@ interface Product {
 interface StockMove {
   id: number,
   product_id: number,
+  document_id: number,
   name: string,
   sku: string,
   date: string,
   quantity: number,
   price: number,
-  comment: string
+  comment: string,
+  movement_type?: "in" | "out"
 }
 
 interface FormData {
@@ -75,6 +77,8 @@ const Products = () => {
   const [faktura, setFaktura] = useState<Faktura[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [stockMove, setStockMove] = useState<StockMove[]>([])
+  const [loadingStockMoves, setLoadingStockMoves] = useState<boolean>(false)
+  const [isLot, setIsLot] = useState(false)
   const [form, setForm] = useState<FormData>({
     product: "",
     sku: "",
@@ -85,49 +89,81 @@ const Products = () => {
   })
   const [currentDocumentId, setCurrentDocumentId] = useState<number>(0)
 
+  // Dastlabki ma'lumotlarni olish
   useEffect(() => {
     const getDocs = async () => {
       try {
-        const [res1, res2, res3] = await Promise.all([
+        const [res1, res2] = await Promise.all([
           api.get("https://fast-simple-crm.onrender.com/api/v1/documents/invoices/with-total"),
           api.get("https://fast-simple-crm.onrender.com/api/v1/products"),
-          api.get("https://fast-simple-crm.onrender.com/api/v1/contract-products")
         ]);
+        
         setFaktura(res1.data)
         setProducts(res2.data)
-        console.log(res1);
-        console.log(res2);
-        console.log(res3);
-        // console.log(res3);
         
+        console.log("Fakturalar:", res1.data);
+        console.log("Mahsulotlar:", res2.data);
 
-
-        const merged = res2.data.flatMap((customer: Mijoz) => {
-          const contracts = res3.data.filter((contract: any) => contract.document_id === customer.id);
-          if (contracts.length > 0) {
-            return contracts.map((contract: any) => ({
-              ...customer,
-              ...contract,
-              has_contract: true // Shartnoma borligini bildiradi
-            }));
-          }
-          return [];
-        });
-        console.log(merged);
-        
-        setStockMove(merged)
-
-        
-        // Birinchi faktura document_id ni olish
         if (res1.data.length > 0) {
           setCurrentDocumentId(res1.data[0].invoice.id || 0)
         }
       } catch (error) {
-        console.log(error);
+        console.error("Ma'lumotlarni olishda xatolik:", error);
       }
     }
     getDocs()
   }, [])
+
+  // Faktura ma'lumotlarini yangilash
+  const refreshFakturaData = async () => {
+    try {
+      const response = await api.get("https://fast-simple-crm.onrender.com/api/v1/documents/invoices/with-total");
+      setFaktura(response.data);
+      console.log("Yangilangan fakturalar:", response.data);
+    } catch (error) {
+      console.error("Faktura ma'lumotlarini yangilashda xatolik:", error);
+    }
+  }
+
+  // Faktura ochilganda stock movelarni olish
+  const fetchStockMovesByDocument = async (documentId: number) => {
+    try {
+      setLoadingStockMoves(true);
+      
+      const response = await api.get("https://fast-simple-crm.onrender.com/api/v1/stock-moves");
+      console.log("Barcha contract products:", response.data);
+      
+      const filteredStockMoves = response.data.filter((item: any) => 
+        item.document_id === documentId
+      );
+      
+      console.log(`Document ${documentId} uchun stock movelar:`, filteredStockMoves);
+      
+      const stockMovesWithProductInfo = filteredStockMoves.map((move: any) => {
+        const product = products.find(p => p.id === move.product_id);
+        return {
+          id: move.id,
+          product_id: move.product_id,
+          document_id: move.document_id,
+          name: product?.name || "Noma'lum mahsulot",
+          sku: product?.sku || "Noma'lum SKU",
+          date: move.date || move.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+          quantity: move.quantity,
+          price: move.price,
+          comment: move.comment || "",
+          movement_type: move.movement_type
+        };
+      });
+      
+      setStockMove(stockMovesWithProductInfo);
+      
+    } catch (error) {
+      console.error("Stock movelarni olishda xatolik:", error);
+      alert("Stock movelarni yuklashda xatolik yuz berdi!");
+    } finally {
+      setLoadingStockMoves(false);
+    }
+  }
 
   // Mahsulot qidirish va tekshirish
   const handleProductSearch = (productName: string) => {
@@ -140,7 +176,6 @@ const Products = () => {
     )
 
     if (existingProduct) {
-      // Mahsulot bazada mavjud
       setIsNewProduct(false)
       setForm(prev => ({
         ...prev,
@@ -149,7 +184,6 @@ const Products = () => {
         price: existingProduct.price
       }))
     } else {
-      // Yangi mahsulot
       setIsNewProduct(true)
       setForm(prev => ({
         ...prev,
@@ -174,13 +208,15 @@ const Products = () => {
         return
       }
 
+      let success = false;
+
       if (isNewProduct) {
-        // Yangi mahsulot - contract-products/with-product endpointiga yuboriladi
+        // Yangi mahsulot
         const contractProductRequest: ContractProductRequest = {
-          user_id: 1, // User ID ni o'zingizning logikangizga moslashtiring
+          user_id: 1,
           product_data: {
             name: form.product,
-            sku: form.sku || `SKU-${Date.now()}`, // Agar SKU bo'lmasa avtomatik yaratish
+            sku: form.sku || `SKU-${Date.now()}`,
             price: form.price
           },
           stock_move_data: {
@@ -194,7 +230,7 @@ const Products = () => {
         }
 
         const response = await api.post(
-          "https://fast-simple-crm.onrender.com/api/v1/contract-products/with-product", 
+          "https://fast-simple-crm.onrender.com/api/v1/stock-moves/with-product", 
           contractProductRequest
         )
 
@@ -204,61 +240,66 @@ const Products = () => {
         }
         
         if (response.data.stock_move) {
-          setStockMove(prev => [...prev, {
+          const newStockMove: StockMove = {
             id: response.data.stock_move.id,
             product_id: response.data.stock_move.product_id,
+            document_id: currentDocumentId,
             name: form.product,
             sku: form.sku,
             date: form.date,
             quantity: form.quantity,
             price: form.price,
-            comment: form.comment
-          }])
+            comment: form.comment,
+            movement_type: faktura[rowId]?.invoice.move_type || "in"
+          }
+          setStockMove(prev => [...prev, newStockMove])
+          success = true;
         }
 
       } else {
-        // Mavjud mahsulot - faqat products endpointiga yuboriladi
+        // Mavjud mahsulot
         const existingProduct = products.find(
           p => p.name === form.product || p.sku === form.sku
         )
 
         if (existingProduct) {
-          // Stock move yaratish (mavjud mahsulot uchun)
           const stockMoveData = {
             product_id: existingProduct.id,
             document_id: currentDocumentId,
             movement_type: faktura[rowId]?.invoice.move_type || "in",
             date: form.date || new Date().toISOString().split('T')[0],
             quantity: form.quantity,
-            price: form.price, // Bu yerda narxni o'zgartirish mumkin
+            price: form.price,
             comment: form.comment
           }
 
           const stockMoveResponse = await api.post(
-            "https://fast-simple-crm.onrender.com/api/v1/contract-products", 
+            "https://fast-simple-crm.onrender.com/api/v1/stock-moves", 
             stockMoveData
           )
           
-          // Local state yangilash
-          setStockMove(prev => [...prev, {
+          const newStockMove: StockMove = {
             id: stockMoveResponse.data.id,
             product_id: existingProduct.id,
+            document_id: currentDocumentId,
             name: existingProduct.name,
             sku: existingProduct.sku,
             date: form.date,
             quantity: form.quantity,
             price: form.price,
-            comment: form.comment
-          }])
+            comment: form.comment,
+            movement_type: faktura[rowId]?.invoice.move_type || "in"
+          }
+          setStockMove(prev => [...prev, newStockMove])
+          success = true;
 
-          // Mahsulot narxini yangilash (agar kerak bo'lsa)
+          // Mahsulot narxini yangilash
           if (form.price !== existingProduct.price) {
-            const updatedProduct = await api.patch(
+            await api.patch(
               `https://fast-simple-crm.onrender.com/api/v1/products/${existingProduct.id}`,
               { price: form.price }
             )
             
-            // Local state yangilash
             setProducts(prev => prev.map(p => 
               p.id === existingProduct.id 
                 ? { ...p, price: form.price }
@@ -268,20 +309,31 @@ const Products = () => {
         }
       }
 
-      // Formni tozalash
-      setForm({
-        product: "",
-        sku: "",
-        price: 0,
-        quantity: 0,
-        date: new Date().toISOString().split('T')[0],
-        comment: ""
-      })
-      setIsNewProduct(false)
+      if (success) {
+        // Faktura ma'lumotlarini yangilash
+        await refreshFakturaData();
+        
+        // Formni tozalash
+        setForm({
+          product: "",
+          sku: "",
+          price: 0,
+          quantity: 0,
+          date: new Date().toISOString().split('T')[0],
+          comment: ""
+        })
+        setIsNewProduct(false)
+        
+        alert("Mahsulot muvaffaqiyatli qo'shildi!");
+      }
+      setIsLot(false)
 
     } catch (error) {
+      if(error.response.data.detail === "The amount received at the warehouse exceeds the amount indicated on the invoice."){
+        setIsLot(true)
+      }
       console.error("Mahsulot qo'shishda xatolik:", error)
-      alert("Mahsulot qo'shishda xatolik yuz berdi!")
+      // alert("Mahsulot qo'shishda xatolik yuz berdi!")
     }
   }
 
@@ -297,28 +349,45 @@ const Products = () => {
     setIsNewProduct(false)
   }
 
-  // Faktura ochilganda document_id ni o'rnatish
-  const handleExpandRow = (id: number, fakturaItem: Faktura) => {
-    setIsOpen(prev => !prev)
-    setRowId(id)
-    console.log(fakturaItem);
+  // Faktura ochilganda stock movelarni yuklash
+  const handleExpandRow = async (id: number, fakturaItem: Faktura) => {
+    const documentId = fakturaItem.invoice.id;
     
-    // Document ID ni o'rnatish
-    if (fakturaItem.invoice.id) {
-      setCurrentDocumentId(fakturaItem.invoice.id)
+    if (isOpen && rowId === id) {
+      setIsOpen(false);
+      setRowId(0);
+    } else {
+      setIsOpen(true);
+      setRowId(id);
+      setCurrentDocumentId(documentId);
+      
+      await fetchStockMovesByDocument(documentId);
     }
   }
 
+  // Faktura ochiq qator uchun stock movelarni filter qilish
+  const getStockMovesForCurrentFaktura = (fakturaId: number) => {
+    return stockMove.filter(item => item.document_id === fakturaId);
+  }
 
-  useEffect(()=>{
-    let i=0;
-    faktura.map(fk=>{
-      if(fk.open_amount !== 0){
-        i++
-      };
-    })
-    setFakturaCountQuant(i);
-  }, [faktura])
+  // Faktura uchun jami summani hisoblash
+  const calculateTotalForFaktura = (fakturaId: number) => {
+    const moves = stockMove.filter(item => item.document_id === fakturaId);
+    return moves.reduce((total, move) => total + (move.price * move.quantity), 0);
+  }
+
+  // Faktura statusini yangilash
+  // useEffect(() => {
+  //   let i = 0;
+  //   faktura.forEach(fk => {
+  //     if (fk.open_amount != 0) {
+  //       i++;
+  //       console.log(fk);
+        
+  //     }
+  //   });
+  //   setFakturaCountQuant(i);
+  // }, [faktura, setFakturaCountQuant])
 
   return (
     <CustomLayout>
@@ -337,169 +406,222 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
-              {faktura.length > 0 ? (faktura.map((fk, id) => (
-                <React.Fragment key={id}>
-                  <tr>
-                    <td className='text-left px-3 py-3'>{id + 1}</td>
-                    <td className='text-left px-3 py-3'>{fk.invoice.move_type === "in" ? "k" : "ch"}</td>
-                    <td className='text-left px-3 py-3'>{fk.invoice.date} dagi {fk.invoice.doc_num} raqamli</td>
-                    <td className='text-left px-3 py-3'>{fk.closed_amount} / {fk.invoice.amount} so`m</td>
-                    <td className='text-left px-3 py-3'>{Math.trunc(((fk.closed_amount / fk.invoice.amount) * 100) * 100) / 100} % yopilgan</td>
-                    <td className='flex justify-end px-3 py-3'>
-                      <FaArrowAltCircleDown 
-                        onClick={() => handleExpandRow(id, fk)} 
-                        className="text-3xl text-green-600 cursor-pointer" 
-                      />
-                    </td>
-                  </tr>
-                  <tr className={`${isOpen && rowId === id ? "table-row" : "hidden"}`}>
-                    <td colSpan={6} className='p-2'>
-                      <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl">
-                        <thead className={`bg-teal-700 text-white uppercase tracking-wide`}>
-                          <tr>
-                            <th className='text-left px-3 py-3'>T/R</th>
-                            <th className='text-left px-3 py-3'>Mahsulot(nomi/sku)</th>
-                            <th className='text-left px-3 py-3'>Sana</th>
-                            <th className='text-left px-3 py-3'>kolichestvo</th>
-                            <th className='text-left px-3 py-3'>narxi</th>
-                            <th className='text-left px-3 py-3'>summa</th>
-                            <th className='text-left px-3 py-3'>izoh</th>
-                            <th className='flex justify-end items-center gap-2 px-3 py-3'>
-                              Instr <FaPlusCircle className='text-2xl' />
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {/* Yangi mahsulot qo'shish formasi */}
-                          <tr>
-                            <td className='text-left px-3 py-3'>
-                              {isNewProduct && (
-                                <span className="inline-block text-blue-700 font-semibold text-[10px]">
-                                  Yangi
-                                </span>
-                              )}
-                            </td>
-                            <td className='text-left px-3 py-3'>
-                              <input
-                                className="border rounded-sm text-left my-1.5 px-3 py-1.5 bg-amber-50 w-full"
-                                list="products"
-                                placeholder="Mahsulot nomi yoki SKU"
-                                name="product"
-                                onChange={(e) => handleProductSearch(e.target.value)}
-                                value={form.product}
-                              />
-                              <datalist id="products">
-                                {products.map(item => (
-                                  <option key={item.id} value={item.name}>
-                                    {item.name} ({item.sku})
-                                  </option>
-                                ))}
-                              </datalist>
-                              <br />
-                              <input
-                                disabled={!isNewProduct}
-                                value={form.sku}
-                                onChange={handleFormChange}
-                                className={`${!isNewProduct ? "bg-gray-200" : "bg-amber-50"} border rounded-sm text-left px-3 py-1.5 w-full`}
-                                name="sku"
-                                placeholder='SKU'
-                                type="text"
-                              />
-                            </td>
-                            <td className='py-1.5'>
-                              <input
-                                value={form.date}
-                                onChange={handleFormChange}
-                                className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
-                                type="date"
-                                name='date'
-                              />
-                            </td>
-                            <td className='py-1.5'>
-                              <input
-                                value={form.quantity}
-                                onChange={handleFormChange}
-                                className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
-                                type="number"
-                                min={0}
-                                name='quantity'
-                                placeholder='miqdor'
-                              />
-                            </td>
-                            <td className='py-1.5'>
-                              <input
-                                value={form.price}
-                                onChange={handleFormChange}
-                                className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
-                                type="number"
-                                min={0}
-                                name='price'
-                                placeholder='narxi'
-                              />
-                              {/* {!isNewProduct && (
-                                <small className="text-gray-500">Mavjud mahsulot narxini o'zgartirish mumkin</small>
-                              )} */}
-                            </td>
-                            <td className='text-left px-3 py-3 font-semibold'>
-                              {form.price * form.quantity} so'm
-                            </td>
-                            <td className='py-1.5'>
-                              <input
-                                value={form.comment}
-                                onChange={handleFormChange}
-                                className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
-                                type="text"
-                                name='comment'
-                                placeholder='izoh'
-                              />
-                            </td>
-                            <td className='cursor-pointer flex items-center justify-end gap-2 text-2xl px-3 py-3'>
-                              <button 
-                                onClick={handleAddProduct}
-                                className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-green-600 hover:text-green-800'
-                                title="Qo'shish"
-                              >
-                                <FaPlusCircle />
-                              </button>
-                              <button 
-                                onClick={handleCancel}
-                                className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-red-600 hover:text-red-800'
-                                title="Bekor qilish"
-                              >
-                                <MdClose />
-                              </button>
-                            </td>
-                          </tr>
-                          
-                          {/* Mavjud stock move lar ro'yxati */}
-                          {stockMove.map((item, index) => (
-                            item.document_id === fk.invoice.id ? (<tr key={item.id}>
-                              <td className='text-left px-3 py-3'>{index + 1}</td>
+              {faktura.length > 0 ? (faktura.map((fk, id) => {
+                const fakturaTotal = calculateTotalForFaktura(fk.invoice.id);
+                const completionPercentage = fk.invoice.amount > 0 ? 
+                  Math.trunc(((fk.closed_amount / fk.invoice.amount) * 100) * 100) / 100 : 0;
+                
+                return (
+                  <React.Fragment key={id}>
+                    <tr>
+                      <td className='text-left px-3 py-3'>{id + 1}</td>
+                      <td className='text-left px-3 py-3'>{fk.invoice.move_type === "in" ? "k" : "ch"}</td>
+                      <td className='text-left px-3 py-3'>{fk.invoice.date} dagi {fk.invoice.doc_num} raqamli</td>
+                      <td className='text-left px-3 py-3'>
+                        {fk.closed_amount} / {fk.invoice.amount} so`m
+                        <br />
+                        <small className="text-green-600 font-semibold">
+                          (Stock moves: {fakturaTotal} so'm)
+                        </small>
+                      </td>
+                      <td className='text-left px-3 py-3'>
+                        <div className="flex items-center gap-2">
+                          <span>{completionPercentage} % yopilgan</span>
+                          <div className="w-20 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-green-600 h-2 rounded-full" 
+                              style={{ width: `${Math.min(completionPercentage, 100)}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className='flex justify-end px-3 py-3'>
+                        <FaArrowAltCircleDown 
+                          onClick={() => handleExpandRow(id, fk)} 
+                          className={`text-3xl cursor-pointer transition-transform ${
+                            isOpen && rowId === id ? 'text-red-600 rotate-180' : 'text-green-600'
+                          }`} 
+                        />
+                      </td>
+                    </tr>
+                    <tr className={`${isOpen && rowId === id ? "table-row" : "hidden"}`}>
+                      <td colSpan={6} className='p-2'>
+                        <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl">
+                          <thead className={`bg-teal-700 text-white uppercase tracking-wide`}>
+                            <tr>
+                              <th className='text-left px-3 py-3'>T/R</th>
+                              <th className='text-left px-3 py-3'>Mahsulot(nomi/sku)</th>
+                              <th className='text-left px-3 py-3'>Sana</th>
+                              <th className='text-left px-3 py-3'>kolichestvo</th>
+                              <th className='text-left px-3 py-3'>narxi</th>
+                              <th className='text-left px-3 py-3'>summa</th>
+                              <th className='text-left px-3 py-3'>izoh</th>
+                              <th className='flex justify-end items-center gap-2 px-3 py-3'>
+                                Instr <FaPlusCircle className='text-2xl' />
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {/* Yangi mahsulot qo'shish formasi */}
+                            <tr>
                               <td className='text-left px-3 py-3'>
-                                <b>{item.name}</b> <br />
-                                <small>{item.sku}</small>
+                                {isNewProduct && (
+                                  <span className="inline-block text-blue-700 font-semibold text-[10px]">
+                                    Yangi
+                                  </span>
+                                )}
                               </td>
-                              <td className='text-left px-3 py-3'>{item.date}</td>
-                              <td className='text-left px-3 py-3'>{item.quantity}</td>
-                              <td className='text-left px-3 py-3'>{item.price}</td>
-                              <td className='text-left px-3 py-3'>{item.price * item.quantity}</td>
-                              <td className='text-left px-3 py-3'>{item.comment}</td>
-                              <td className='flex justify-end items-center gap-3 px-3 py-3'>
-                                <button className='text-2xl text-yellow-600 hover:text-yellow-800'>
-                                  <BiEdit />
+                              <td className='text-left px-3 py-3'>
+                                <input
+                                  className="border rounded-sm text-left my-1.5 px-3 py-1.5 bg-amber-50 w-full"
+                                  list="products"
+                                  placeholder="Mahsulot nomi yoki SKU"
+                                  name="product"
+                                  onChange={(e) => handleProductSearch(e.target.value)}
+                                  value={form.product}
+                                />
+                                <datalist id="products">
+                                  {products.map(item => (
+                                    <option key={item.id} value={item.name}>
+                                      {item.name} ({item.sku})
+                                    </option>
+                                  ))}
+                                </datalist>
+                                <br />
+                                <input
+                                  disabled={!isNewProduct}
+                                  value={form.sku}
+                                  onChange={handleFormChange}
+                                  className={`${!isNewProduct ? "bg-gray-200" : "bg-amber-50"} border rounded-sm text-left px-3 py-1.5 w-full`}
+                                  name="sku"
+                                  placeholder='SKU'
+                                  type="text"
+                                />
+                              </td>
+                              <td className='py-1.5'>
+                                <input
+                                  value={form.date}
+                                  onChange={handleFormChange}
+                                  className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
+                                  type="date"
+                                  name='date'
+                                />
+                              </td>
+                              <td className='py-1.5'>
+                                <input
+                                  value={form.quantity}
+                                  onChange={handleFormChange}
+                                  className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
+                                  type="number"
+                                  min={0}
+                                  name='quantity'
+                                  placeholder='miqdor'
+                                />
+                              </td>
+                              <td className='py-1.5 relative'>
+                                <input
+                                  value={form.price}
+                                  onChange={handleFormChange}
+                                  className={`${isLot ? "border-2 border-red-500" : ""} border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full`}
+                                  type="number"
+                                  min={0}
+                                  name='price'
+                                  placeholder='narxi'
+                                /> 
+                                <span className={`${isLot ? "inline-block" : "hidden"} absolute top-1 left-0 text-[10px] text-red-600`}>Hisobdan oshib ketdi!</span>
+                              </td>
+                              <td className='text-left px-3 py-3 font-semibold'>
+                                {form.price * form.quantity} so`m
+                              </td>
+                              <td className='py-1.5'>
+                                <input
+                                  value={form.comment}
+                                  onChange={handleFormChange}
+                                  className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
+                                  type="text"
+                                  name='comment'
+                                  placeholder='izoh'
+                                />
+                              </td>
+                              <td className='cursor-pointer flex items-center justify-end gap-2 text-2xl px-3 py-3'>
+                                <button 
+                                  onClick={handleAddProduct}
+                                  className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-green-600 hover:text-green-800'
+                                  title="Qo'shish"
+                                >
+                                  <FaPlusCircle />
                                 </button>
-                                <button className='text-2xl text-red-600 hover:text-red-800'>
+                                <button 
+                                  onClick={handleCancel}
+                                  className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-red-600 hover:text-red-800'
+                                  title="Bekor qilish"
+                                >
                                   <MdClose />
                                 </button>
                               </td>
-                            </tr>) : null
-                          ))}
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                </React.Fragment>
-              ))) : (
+                            </tr>
+                            
+                            {/* Loading holati */}
+                            {loadingStockMoves && (
+                              <tr>
+                                <td colSpan={8} className="text-center px-3 py-3">
+                                  Yuklanmoqda...
+                                </td>
+                              </tr>
+                            )}
+                            
+                            {/* Mavjud stock move lar ro'yxati */}
+                            {getStockMovesForCurrentFaktura(fk.invoice.id).map((item, index) => (
+                              <tr key={item.id}>
+                                <td className='text-left px-3 py-3'>{index + 1}</td>
+                                <td className='text-left px-3 py-3'>
+                                  <b>{item.name}</b> <br />
+                                  <small>{item.sku}</small>
+                                </td>
+                                <td className='text-left px-3 py-3'>{item.date}</td>
+                                <td className='text-left px-3 py-3'>{item.quantity}</td>
+                                <td className='text-left px-3 py-3'>{item.price}</td>
+                                <td className='text-left px-3 py-3'>{item.price * item.quantity}</td>
+                                <td className='text-left px-3 py-3'>{item.comment}</td>
+                                <td className='flex justify-end items-center gap-3 px-3 py-3'>
+                                  <button className='text-2xl text-yellow-600 hover:text-yellow-800'>
+                                    <BiEdit />
+                                  </button>
+                                  <button className='text-2xl text-red-600 hover:text-red-800'>
+                                    <MdClose />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                            
+                            {/* Jami summa qatori */}
+                            {getStockMovesForCurrentFaktura(fk.invoice.id).length > 0 && (
+                              <tr className="bg-gray-100 font-bold">
+                                <td colSpan={5} className='text-right px-3 py-3'>
+                                  Jami:
+                                </td>
+                                <td className='text-left px-3 py-3 text-green-600'>
+                                  {calculateTotalForFaktura(fk.invoice.id)} so'm
+                                </td>
+                                <td colSpan={2}></td>
+                              </tr>
+                            )}
+                            
+                            {/* Agar stock move lar bo'lmasa */}
+                            {!loadingStockMoves && getStockMovesForCurrentFaktura(fk.invoice.id).length === 0 && (
+                              <tr>
+                                <td colSpan={8} className="text-center px-3 py-3 text-gray-500">
+                                  Hozircha mahsulotlar mavjud emas
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </React.Fragment>
+                );
+              })) : (
                 <tr>
                   <td colSpan={6} className='text-center px-3 py-3'>Fakturalar mavjud emas</td>
                 </tr>
