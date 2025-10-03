@@ -438,7 +438,7 @@ const Products = () => {
                       <td className='flex justify-end px-3 py-3'>
                         <FaArrowAltCircleDown 
                           onClick={() => handleExpandRow(id, fk)} 
-                          className={`text-3xl cursor-pointer transition-transform ${
+                          className={` text-3xl cursor-pointer transition-transform ${
                             isOpen && rowId === id ? 'text-red-600 rotate-180' : 'text-green-600'
                           }`} 
                         />
@@ -457,13 +457,13 @@ const Products = () => {
                               <th className='text-left px-3 py-3'>summa</th>
                               <th className='text-left px-3 py-3'>izoh</th>
                               <th className='flex justify-end items-center gap-2 px-3 py-3'>
-                                Instr <FaPlusCircle className='text-2xl' />
+                                {/* Instr <FaPlusCircle className='text-2xl' /> */}
                               </th>
                             </tr>
                           </thead>
                           <tbody>
                             {/* Yangi mahsulot qo'shish formasi */}
-                            <tr>
+                            <tr className={`${fk.open_amount == 0 ? "hidden" : "table-row"}`}>
                               <td className='text-left px-3 py-3'>
                                 {isNewProduct && (
                                   <span className="inline-block text-blue-700 font-semibold text-[10px]">
@@ -544,7 +544,8 @@ const Products = () => {
                                 />
                               </td>
                               <td className='cursor-pointer flex items-center justify-end gap-2 text-2xl px-3 py-3'>
-                                <button 
+                                <div>
+                                  <button 
                                   onClick={handleAddProduct}
                                   className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-green-600 hover:text-green-800'
                                   title="Qo'shish"
@@ -558,6 +559,7 @@ const Products = () => {
                                 >
                                   <MdClose />
                                 </button>
+                                </div>
                               </td>
                             </tr>
                             
