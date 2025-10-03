@@ -906,11 +906,11 @@ const Sales = () => {
                             <td colSpan={6} className='text-left px-3 py-3'></td>
                             <td className='text-left px-3 py-3'>
                               Jami D: <br />
-                              {totalDebit.toLocaleString()}
+                              {item.total_debit?.toLocaleString()}
                             </td>
                             <td className='text-left px-3 py-3'>
                               Jami K: <br />
-                              {totalKredit.toLocaleString()}
+                              {item.total_credit?.toLocaleString()}
                             </td>
                             <td className='text-right px-3 py-3'></td>
                           </tr>
