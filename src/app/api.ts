@@ -22,6 +22,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
 
     return data.access_token;
   } catch (err) {
+    window.location.href = "/auth"
     console.error("Refresh token ishlamadi:", err);
     return null;
   }

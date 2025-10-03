@@ -6,6 +6,7 @@ import { FaArrowAltCircleDown, FaPlusCircle } from 'react-icons/fa'
 import { MdClose } from 'react-icons/md'
 import api from '../auth'
 import { useM } from '../context'
+import { TbArrowDownLeft, TbArrowUpRight } from 'react-icons/tb'
 
 interface Faktura {
   closed_amount: number,
@@ -392,7 +393,7 @@ const Products = () => {
   return (
     <CustomLayout>
       <div className="w-full p-6 max-h-screen overflow-y-auto">
-        <div className="title mb-4 text-2xl font-semibold">2910</div>
+        <div className="title mb-4 text-2xl font-semibold">Ombor</div>
         <div className="overflow-x-auto">
           <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl">
             <thead className={`bg-teal-900 text-white uppercase tracking-wide`}>
@@ -415,18 +416,26 @@ const Products = () => {
                   <React.Fragment key={id}>
                     <tr>
                       <td className='text-left px-3 py-3'>{id + 1}</td>
-                      <td className='text-left px-3 py-3'>{fk.invoice.move_type === "in" ? "k" : "ch"}</td>
+                      <td className='text-left px-3 py-3'>{fk.invoice.move_type === "in" ? (
+  <span className="flex items-center gap-1">
+    <TbArrowDownLeft /> Вх.
+  </span>
+) : (
+  <span className="flex items-center gap-1">
+    <TbArrowUpRight /> Иcх.
+  </span>
+)}</td>
                       <td className='text-left px-3 py-3'>{fk.invoice.date} dagi {fk.invoice.doc_num} raqamli</td>
                       <td className='text-left px-3 py-3'>
                         {fk.closed_amount} / {fk.invoice.amount} so`m
                         <br />
                         <small className="text-green-600 font-semibold">
-                          (Stock moves: {fakturaTotal} so'm)
+                          (Ochiq summa: {fk.open_amount} so`m)
                         </small>
                       </td>
                       <td className='text-left px-3 py-3'>
                         <div className="flex items-center gap-2">
-                          <span>{completionPercentage} % yopilgan</span>
+                          <span>{completionPercentage}% yopilgan</span>
                           <div className="w-20 bg-gray-200 rounded-full h-2">
                             <div 
                               className="bg-green-600 h-2 rounded-full" 

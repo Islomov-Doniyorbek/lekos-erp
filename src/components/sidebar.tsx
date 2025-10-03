@@ -30,21 +30,21 @@ const SideBar = () => {
         {
             id:4,
             ico: <MdPointOfSale/>,
-            title: "Sotuvlar\n6010",
+            title: "Sotuvlar",
             path: "/sales",
             count: null
         },
         {
             id:5,
             ico: <GiBuyCard/>,
-            title: "Xaridlar\n6310",
+            title: "Xaridlar",
             path: "/purchases",
             count: null
         },
         {
             id:3,
             ico: <FaBoxArchive/>,
-            title: "2910",
+            title: "Ombor",
             path: "/stock",
             count: fakturaCount
         },

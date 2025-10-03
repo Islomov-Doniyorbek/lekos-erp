@@ -508,7 +508,7 @@ const Purchase = () => {
   return (
     <CustomLayout>
       <div className='w-full p-6 max-h-screen overflow-y-auto'>
-        <div className="title mb-4 text-2xl font-semibold">Xaridlar (6310)</div>
+        <div className="title mb-4 text-2xl font-semibold">Xaridlar</div>
         <div className="overflow-x-auto">
           <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl">
             <thead className={`bg-teal-900 text-white uppercase tracking-wide`}>
