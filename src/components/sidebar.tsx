@@ -3,7 +3,8 @@
 import api from '@/app/auth';
 import { useM } from '@/app/context';
 import Link from 'next/link';
-import React, { useEffect } from 'react'
+import { usePathname } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
 import { FaShippingFast, FaUser } from 'react-icons/fa';
 import { FaBoxArchive} from 'react-icons/fa6';
 import { GiBuyCard } from 'react-icons/gi';
@@ -86,7 +87,7 @@ const SideBar = () => {
     }, [])
     
     console.log(fakturaCount);
-    
+    const pathName = usePathname()
 // bg-[#013d8c]
   return (
     <div className={`z-40 absolute ${isOpen ? "left-0" : "-left-40"} -left-40 lg:relative lg:left-0 flex flex-col  items-center w-28 h-full py-3.5 ${bg2}`}>
@@ -94,9 +95,11 @@ const SideBar = () => {
         {
             sideIcons.map(item=>{
                 return (
-                    <Link onClick={()=>toggleMenu()} 
-                    className={`${bg2} py-4 w-full 
-                      flex ${txt} relative
+                    <Link onClick={()=>{
+                        toggleMenu();
+                    }} 
+                    className={`${bg2} ${pathName == item.path ? "bg-amber-50 text-[#0053d9] rounded-l-full" : `${txt}`} py-4 w-full 
+                      flex  relative
                      flex-col gap-1.5 rounded-l-4xl
                      items-center hover:bg-white transition duration-700 hover:text-[#0053d9] hover:rounded-l-full`} key={item.id} href={item.path}>
                             <span className='text-2xl'>{item.ico}</span>
