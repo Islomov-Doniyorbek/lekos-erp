@@ -5,7 +5,8 @@ import { useM } from '@/app/context';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import { FaShippingFast, FaUser } from 'react-icons/fa';
+import { BsXbox } from 'react-icons/bs';
+import { FaBox, FaProductHunt, FaShippingFast, FaUser } from 'react-icons/fa';
 import { FaBoxArchive} from 'react-icons/fa6';
 import { GiBuyCard } from 'react-icons/gi';
 import { MdDashboard, MdPointOfSale } from 'react-icons/md';
@@ -63,6 +64,13 @@ const SideBar = () => {
             path: "/suplier",
             count: null
         },
+        {
+            id:23,
+            ico: <FaBox/>,
+            title: "Mahsulot",
+            path: "/products",
+            count: null
+        },
     ]
     useEffect(()=>{
         const getFaktura = async ()=>{
@@ -102,7 +110,7 @@ const SideBar = () => {
                       flex  relative
                      flex-col gap-1.5 rounded-l-4xl
                      items-center hover:bg-white transition duration-700 hover:text-[#0053d9] hover:rounded-l-full`} key={item.id} href={item.path}>
-                            <span className='text-2xl'>{item.ico}</span>
+                            <span className='text-xl'>{item.ico}</span>
                             <span className='text-lg text-center'>{item.title}</span>
                             <div className={`${item.count !=null ? (item.count > 0 ? "block" : "hidden") : "hidden"} absolute flex items-center justify-center w-5 h-5 rounded-full bg-red-500 left-6 top-2`}>{item.count!=null ? item.count : null}</div>
                     </Link>

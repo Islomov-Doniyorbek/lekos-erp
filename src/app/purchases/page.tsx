@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
-import { MdClose, MdEdit } from 'react-icons/md'
+import { MdCheck, MdClose, MdEdit } from 'react-icons/md'
 import { FaPlus, FaPlusCircle, FaTrash } from 'react-icons/fa'
 import type { components, paths } from "../../../types";
 import api from '../auth'
@@ -110,6 +110,8 @@ const Purchase = () => {
         ]);
 
         setSuppliers(res1.data);
+        // console.log(res1.data);
+        
         
         const merged = res1.data.flatMap((supplier: Supplier) => {
           const contracts = res2.data.filter((contract: any) => contract.agent_id === supplier.id);
@@ -184,8 +186,21 @@ const Purchase = () => {
             }
           }
         );
-      }
+        console.log(response.data);
+        
+        setSuppliers((prev) => [
+  ...prev,
+  {
+    id: response.data.id,
+    name: form.supplier,
+    tin: form.stir || "",
+  },
+]);
 
+
+        // window.location.href = "/purchase"
+      }
+      
       const newRow: PurchaseDeal = {
         id: response.data.id,
         name: form.supplier,
@@ -196,7 +211,7 @@ const Purchase = () => {
         total: 0,
         has_contract: true
       };
-
+      
       setRows(prev => [...prev, newRow]);
       
       setForm({
@@ -213,6 +228,25 @@ const Purchase = () => {
       
     } catch (error) {
       console.log(error);
+      // window.location.href = "/purchases"
+      
+      // setForm({
+        //   id: 0,
+        //   supplier: "",
+        //   stir: "",
+        //   sana: "",
+      //   raqam: "",
+      //   izoh: "",
+      //   total: 0
+      // });
+      setSuppliers((prev) => [
+  ...prev,
+  {
+    id: 1987411,
+    name: form.supplier,
+    tin: form.stir || "",
+  },
+]);
       alert("Xatolik yuz berdi! Ma'lumotlarni qayta tekshiring.");
     }
   };
@@ -242,7 +276,7 @@ const Purchase = () => {
 
   const handleSave = async () => {
     try {
-      await api.put(
+      await api.patch(
         `https://fast-simple-crm.onrender.com/api/v1/contracts/${editForm.id}`,
         {
           date: editForm.sana,
@@ -308,7 +342,7 @@ const Purchase = () => {
       // YANGILANDI: move_type asosida type avtomatik hisoblanadi
       const type = editInForm.move_type === "in" ? "invoice" : "payment";
 
-      await api.put(
+      await api.patch(
         `https://fast-simple-crm.onrender.com/api/v1/documents/${editInForm.id}`,
         {
           type: type,
@@ -653,43 +687,34 @@ const Purchase = () => {
                         <MdEdit />
                       </span>
                     </td>
-                    <td className='py-0.5'>
-                      <input 
-                        className="border rounded-sm text-left px-3 py-1.5 my-0.5 bg-gray-400 w-full"
-                        value={editForm.supplier}
-                        disabled={true}
-                      />
-                      <br />
-                      <input
-                        value={editForm.stir}
-                        className='border rounded-sm text-left px-3 py-1.5 bg-gray-400 w-full'
-                        disabled={true}
-                      />
+                    <td className='text-left pl-6 pr-3 py-2'>
+                      <b>{editForm.supplier}</b> <br />
+                      <small>{editForm.stir ? editForm.stir : "J.SH."}</small>
                     </td>
-                    <td className='py-1.5'>
+                    <td className='p-1.5'>
                       <input 
                         value={editForm.sana} 
                         onChange={handleEditChange} 
-                        className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
+                        className='text-left px-3 py-1.5 bg-[#c1f0f8] w-full' 
                         type="date" 
                         name='sana' 
                       />
                     </td>
-                    <td className='py-1.5'>
+                    <td className='p-1.5'>
                       <input 
                         value={editForm.raqam} 
                         onChange={handleEditChange} 
-                        className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
+                        className='text-left px-3 py-1.5 bg-[#c1f0f8] w-full' 
                         type="text" 
                         name='raqam' 
                         placeholder='hujjat raqami' 
                       />
                     </td>
-                    <td className='py-1.5'>
+                    <td className='p-1.5'>
                       <input 
                         value={editForm.izoh} 
                         onChange={handleEditChange} 
-                        className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
+                        className='text-left px-3 py-1.5 bg-[#c1f0f8] w-full' 
                         type="text" 
                         name='izoh' 
                         placeholder='izoh' 
@@ -697,9 +722,9 @@ const Purchase = () => {
                     </td>
                     <td className='text-left px-3 py-3'></td>
                     <td className='text-left px-3 py-3'></td>
-                    <td className='text-left cursor-pointer flex items-center gap-1.5 text-2xl px-3 py-3'>
+                    <td className='text-left cursor-pointer flex justify-center items-center gap-1.5 text-2xl px-3 py-3'>
                       <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-green-600'>
-                        <FaPlusCircle onClick={handleSave} />
+                        <MdCheck onClick={handleSave} />
                       </button>
                       <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-red-500'>
                         <MdClose onClick={() => setIsEditRow(false)} />

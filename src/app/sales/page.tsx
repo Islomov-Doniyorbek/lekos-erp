@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
-import { MdClose, MdEdit } from 'react-icons/md'
+import { MdCheck, MdClose, MdEdit } from 'react-icons/md'
 import { FaPlus, FaPlusCircle, FaTrash } from 'react-icons/fa'
 import type { components, paths } from "../../../types";
 import api from '../auth'
@@ -186,6 +186,14 @@ const Sales = () => {
             }
           }
         );
+        setMijozlar((prev) => [
+  ...prev,
+  {
+    id: response.data.id,
+    name: form.customer,
+    tin: form.stir || "",
+  },
+]);
       }
 
       // Yangi qatorni qo'shish
@@ -218,6 +226,14 @@ const Sales = () => {
     } catch (error) {
       console.log(error);
       alert("Xatolik yuz berdi! Ma'lumotlarni qayta tekshiring.");
+      setMijozlar((prev) => [
+  ...prev,
+  {
+    id: 1987411,
+    name: form.customer,
+    tin: form.stir || "",
+  },
+]);
     }
   };
 
@@ -246,7 +262,7 @@ const Sales = () => {
 
   const handleSave = async () => {
     try {
-      await api.put(
+      await api.patch(
         `https://fast-simple-crm.onrender.com/api/v1/contracts/${editForm.id}`,
         {
           date: editForm.sana,
@@ -312,7 +328,7 @@ const Sales = () => {
       // YANGILANDI: move_type asosida type avtomatik hisoblanadi
       const type = editInForm.move_type === "out" ? "invoice" : "payment";
 
-      await api.put(
+      await api.patch(
         `https://fast-simple-crm.onrender.com/api/v1/documents/${editInForm.id}`,
         {
           type: type,
@@ -658,43 +674,34 @@ const Sales = () => {
                         <MdEdit />
                       </span>
                     </td>
-                    <td className='py-0.5'>
-                      <input 
-                        className="border rounded-sm text-left px-3 py-1.5 my-0.5 bg-gray-400 w-full"
-                        value={editForm.customer}
-                        disabled={true}
-                      />
-                      <br />
-                      <input
-                        value={editForm.stir}
-                        className='border rounded-sm text-left px-3 py-1.5 bg-gray-400 w-full'
-                        disabled={true}
-                      />
+                    <td className='text-left pl-6 pr-3 py-2'>
+                      <b>{editForm.customer}</b> <br />
+                      <small>{editForm.stir ? editForm.stir : "J.SH."}</small>
                     </td>
-                    <td className='py-1.5'>
+                    <td className='p-1.5'>
                       <input 
                         value={editForm.sana} 
                         onChange={handleEditChange} 
-                        className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
+                        className='rounded-sm text-left px-3 py-1.5 w-full bg-[aqua]' 
                         type="date" 
                         name='sana' 
                       />
                     </td>
-                    <td className='py-1.5'>
+                    <td className='p-1.5'>
                       <input 
                         value={editForm.raqam} 
                         onChange={handleEditChange} 
-                        className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
+                        className='rounded-sm text-left px-3 py-1.5 w-full bg-[aqua]' 
                         type="text" 
                         name='raqam' 
                         placeholder='hujjat raqami' 
                       />
                     </td>
-                    <td className='py-1.5'>
+                    <td className='p-1.5'>
                       <input 
                         value={editForm.izoh} 
                         onChange={handleEditChange} 
-                        className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
+                        className='rounded-sm text-left px-3 py-1.5 w-full bg-[aqua]' 
                         type="text" 
                         name='izoh' 
                         placeholder='izoh' 
@@ -702,9 +709,9 @@ const Sales = () => {
                     </td>
                     <td className='text-left px-3 py-3'></td>
                     <td className='text-left px-3 py-3'></td>
-                    <td className='text-left cursor-pointer flex items-center gap-1.5 text-2xl px-3 py-3'>
+                    <td className='text-right cursor-pointer flex items-center justify-end gap-1.5 text-2xl px-3 py-3'>
                       <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-green-600'>
-                        <FaPlusCircle onClick={handleSave} />
+                        <MdCheck onClick={handleSave} />
                       </button>
                       <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-red-500'>
                         <MdClose onClick={() => setIsEditRow(false)} />
