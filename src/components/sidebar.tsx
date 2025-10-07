@@ -107,9 +107,9 @@ const SideBar = () => {
                     <Link onClick={()=>{
                         toggleMenu();
                     }} 
-                    className={`${bg2} ${pathName == item.path ? "bg-amber-50 text-[#0053d9] rounded-l-full" : `${txt}`} py-4 w-full 
+                    className={`${bg2} ${pathName == item.path ? "bg-amber-50 text-[#0053d9] rounded-l-full" : `${txt}`} py-2 lg:py-4 w-full 
                       flex  relative
-                     flex-col gap-1.5 rounded-l-4xl
+                     flex-col gap-1 lg:gap-1.5 rounded-l-2xl lg:rounded-l-4xl
                      items-center hover:bg-white transition duration-700 hover:text-[#0053d9] hover:rounded-l-full`} key={item.id} href={item.path}>
                             <span className='text-xl'>{item.ico}</span>
                             <span className='text-lg text-center'>{item.title}</span>
