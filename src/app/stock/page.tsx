@@ -516,7 +516,15 @@ const Products = () => {
                         <TbArrowUpRight /> Иcх.
                       </span>
                     )}</td>
-                      <td className='text-left px-3 py-3'>{fk.invoice.doc_num ? `${fk.invoice.date} sanadagi ${fk.invoice.doc_num} raqamli` : fk.invoice.date}</td>
+                      <td className='text-left px-3 py-3'>
+                        {fk.invoice.doc_num ? (
+                          <>
+                            {fk.invoice.date} sanadagi <strong>{fk.invoice.doc_num}</strong> raqamli
+                          </>
+                        ) : (
+                          fk.invoice.date
+                        )}
+                      </td>
                       <td className='text-left px-3 py-3'>
                         {fk.closed_amount} / {fk.invoice.amount} so`m
                         <br />
