@@ -571,7 +571,7 @@ const Sales = () => {
                     }}
                     value={form.customer}
                   />
-                  <datalist className='z-20' id="cst">
+                  <datalist className='z-20 ' id="cst">
                     {mijozlar.map(item => (
                       <option key={item.id} value={item.name}>{item.name}</option>
                     ))}
