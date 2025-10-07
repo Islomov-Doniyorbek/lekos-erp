@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
 import { BiEdit } from 'react-icons/bi'
 import { FaArrowAltCircleDown, FaPlusCircle } from 'react-icons/fa'
-import { MdClose } from 'react-icons/md'
+import { MdClose, MdCheck, MdCancel } from 'react-icons/md'
 import api from '../auth'
 import { useM } from '../context'
 import { TbArrowDownLeft, TbArrowUpRight } from 'react-icons/tb'
@@ -37,7 +37,6 @@ interface StockMove {
   document_id: number,
   name: string,
   sku: string,
-  date: string,
   quantity: number,
   price: number,
   comment: string,
@@ -70,6 +69,14 @@ interface ContractProductRequest {
   }
 }
 
+// Yangi interface: butun row uchun edit rejimi
+interface EditingRow {
+  id: number;
+  quantity: number;
+  price: number;
+  comment: string;
+}
+
 const Products = () => {
   const {setFakturaCountQuant} = useM()
   const [isOpen, setIsOpen] = useState(false)
@@ -89,6 +96,9 @@ const Products = () => {
     comment: ""
   })
   const [currentDocumentId, setCurrentDocumentId] = useState<number>(0)
+  
+  // Yangi state: butun row uchun edit rejimi
+  const [editingRows, setEditingRows] = useState<EditingRow[]>([])
 
   // Dastlabki ma'lumotlarni olish
   useEffect(() => {
@@ -165,6 +175,114 @@ const Products = () => {
       setLoadingStockMoves(false);
     }
   }
+
+  // INLINE EDIT FUNCTIONS - YANGI USUL
+
+  // Edit rejimini boshlash
+  const startEditingRow = (stockMove: StockMove) => {
+    setEditingRows(prev => [...prev.filter(item => item.id !== stockMove.id), {
+      id: stockMove.id,
+      quantity: stockMove.quantity,
+      price: stockMove.price,
+      comment: stockMove.comment
+    }]);
+  };
+
+  // Edit rejimini bekor qilish
+  const cancelEditingRow = (id: number) => {
+    setEditingRows(prev => prev.filter(item => item.id !== id));
+  };
+
+  // Edit qilingan qiymatni yangilash
+  const updateEditingRow = (id: number, field: 'quantity' | 'price' | 'comment', value: any) => {
+    setEditingRows(prev => 
+      prev.map(item => 
+        item.id === id 
+          ? { 
+              ...item, 
+              [field]: field === 'quantity' || field === 'price' ? Number(value) : value 
+            }
+          : item
+      )
+    );
+  };
+
+  // O'zgartirishlarni saqlash
+  const saveEditingRow = async (id: number) => {
+    const editingRow = editingRows.find(item => item.id === id);
+    if (!editingRow) return;
+
+    try {
+      // API orqali yangilash
+      const updateData = {
+        quantity: editingRow.quantity,
+        price: editingRow.price,
+        comment: editingRow.comment
+      };
+
+      await api.patch(
+        `https://fast-simple-crm.onrender.com/api/v1/stock-moves/${id}`,
+        updateData
+      );
+
+      // Local state yangilash
+      setStockMove(prev => 
+        prev.map(item => 
+          item.id === id 
+            ? { 
+                ...item, 
+                quantity: editingRow.quantity,
+                price: editingRow.price,
+                comment: editingRow.comment
+              }
+            : item
+        )
+      );
+
+      // Faktura ma'lumotlarini yangilash
+      await refreshFakturaData();
+      
+      // Edit rejimidan chiqish
+      cancelEditingRow(id);
+      
+      alert("Mahsulot ma'lumotlari muvaffaqiyatli yangilandi!");
+      
+    } catch (error) {
+      console.error("Yangilashda xatolik:", error);
+      alert("Yangilashda xatolik yuz berdi!");
+    }
+  };
+
+  // Edit rejimida bo'lgan row ni tekshirish
+  const isEditingRow = (id: number) => {
+    return editingRows.some(item => item.id === id);
+  };
+
+  // Edit rejimidagi qiymatni olish
+  const getEditingRowValue = (id: number, field: 'quantity' | 'price' | 'comment') => {
+    const editingRow = editingRows.find(item => item.id === id);
+    return editingRow ? editingRow[field] : '';
+  };
+
+  // Stock moveni o'chirish
+  const handleDeleteStockMove = async (id: number) => {
+    if (!confirm("Haqiqatan ham ushbu mahsulotni o'chirmoqchimisiz?")) return;
+
+    try {
+      await api.delete(`https://fast-simple-crm.onrender.com/api/v1/stock-moves/${id}`);
+      
+      // Local state yangilash
+      setStockMove(prev => prev.filter(item => item.id !== id));
+      
+      // Faktura ma'lumotlarini yangilash
+      await refreshFakturaData();
+      
+      alert("Mahsulot muvaffaqiyatli o'chirildi!");
+    } catch (error) {
+      console.error("O'chirishda xatolik:", error);
+      alert("O'chirishda xatolik yuz berdi!");
+    }
+  };
 
   // Mahsulot qidirish va tekshirish
   const handleProductSearch = (productName: string) => {
@@ -247,7 +365,6 @@ const Products = () => {
             document_id: currentDocumentId,
             name: form.product,
             sku: form.sku,
-            date: form.date,
             quantity: form.quantity,
             price: form.price,
             comment: form.comment,
@@ -268,7 +385,6 @@ const Products = () => {
             product_id: existingProduct.id,
             document_id: currentDocumentId,
             movement_type: faktura[rowId]?.invoice.move_type || "in",
-            date: form.date || new Date().toISOString().split('T')[0],
             quantity: form.quantity,
             price: form.price,
             comment: form.comment
@@ -285,7 +401,6 @@ const Products = () => {
             document_id: currentDocumentId,
             name: existingProduct.name,
             sku: existingProduct.sku,
-            date: form.date,
             quantity: form.quantity,
             price: form.price,
             comment: form.comment,
@@ -293,20 +408,6 @@ const Products = () => {
           }
           setStockMove(prev => [...prev, newStockMove])
           success = true;
-
-          // Mahsulot narxini yangilash
-          if (form.price !== existingProduct.price) {
-            await api.patch(
-              `https://fast-simple-crm.onrender.com/api/v1/products/${existingProduct.id}`,
-              { price: form.price }
-            )
-            
-            setProducts(prev => prev.map(p => 
-              p.id === existingProduct.id 
-                ? { ...p, price: form.price }
-                : p
-            ))
-          }
         }
       }
 
@@ -329,12 +430,11 @@ const Products = () => {
       }
       setIsLot(false)
 
-    } catch (error) {
-      if(error.response.data.detail === "The amount received at the warehouse exceeds the amount indicated on the invoice."){
+    } catch (error: any) {
+      if(error.response?.data?.detail === "The amount received at the warehouse exceeds the amount indicated on the invoice."){
         setIsLot(true)
       }
       console.error("Mahsulot qo'shishda xatolik:", error)
-      // alert("Mahsulot qo'shishda xatolik yuz berdi!")
     }
   }
 
@@ -357,10 +457,12 @@ const Products = () => {
     if (isOpen && rowId === id) {
       setIsOpen(false);
       setRowId(0);
+      setEditingRows([]); // Edit rejimini tozalash
     } else {
       setIsOpen(true);
       setRowId(id);
       setCurrentDocumentId(documentId);
+      setEditingRows([]); // Edit rejimini tozalash
       
       await fetchStockMovesByDocument(documentId);
     }
@@ -376,27 +478,16 @@ const Products = () => {
     const moves = stockMove.filter(item => item.document_id === fakturaId);
     return moves.reduce((total, move) => total + (move.price * move.quantity), 0);
   }
-
-  // Faktura statusini yangilash
-  // useEffect(() => {
-  //   let i = 0;
-  //   faktura.forEach(fk => {
-  //     if (fk.open_amount != 0) {
-  //       i++;
-  //       console.log(fk);
-        
-  //     }
-  //   });
-  //   setFakturaCountQuant(i);
-  // }, [faktura, setFakturaCountQuant])
-
+  
+  const {bg,bg2, txt} = useM()
+  
   return (
     <CustomLayout>
       <div className="w-full p-6 max-h-screen overflow-y-auto">
-        <div className="title mb-4 text-2xl font-semibold">Ombor</div>
-        <div className="overflow-x-auto">
-          <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl">
-            <thead className={`bg-teal-900 text-white uppercase tracking-wide`}>
+        <div className="title mb-4 text-2xl font-semibold">Список счетов-фактур по договорам</div>
+        <div className="overflow-x-auto border-[1px] border-gray-100 border-t-0 rounded-2xl">
+          <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
+            <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
               <tr>
                 <th className='text-left px-3 py-3'>T/R</th>
                 <th className='text-left px-3 py-3'>Тип</th>
@@ -414,18 +505,18 @@ const Products = () => {
                 
                 return (
                   <React.Fragment key={id}>
-                    <tr>
+                    <tr className={`${faktura.length == id+1 ? "border-b-0" : "border-b border-gray-300"}`}>
                       <td className='text-left px-3 py-3'>{id + 1}</td>
                       <td className='text-left px-3 py-3'>{fk.invoice.move_type === "in" ? (
-  <span className="flex items-center gap-1">
-    <TbArrowDownLeft /> Вх.
-  </span>
-) : (
-  <span className="flex items-center gap-1">
-    <TbArrowUpRight /> Иcх.
-  </span>
-)}</td>
-                      <td className='text-left px-3 py-3'>{fk.invoice.date} dagi {fk.invoice.doc_num} raqamli</td>
+                      <span className="flex items-center gap-1">
+                        <TbArrowDownLeft /> Вх.
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1">
+                        <TbArrowUpRight /> Иcх.
+                      </span>
+                    )}</td>
+                      <td className='text-left px-3 py-3'>{fk.invoice.doc_num ? `${fk.invoice.date} sanadagi ${fk.invoice.doc_num} raqamli` : fk.invoice.date}</td>
                       <td className='text-left px-3 py-3'>
                         {fk.closed_amount} / {fk.invoice.amount} so`m
                         <br />
@@ -438,7 +529,7 @@ const Products = () => {
                           <span>{completionPercentage}% yopilgan</span>
                           <div className="w-20 bg-gray-200 rounded-full h-2">
                             <div 
-                              className="bg-green-600 h-2 rounded-full" 
+                              className={` h-2 rounded-full ${completionPercentage > 100 ? "bg-red-600" : "bg-green-600"}`} 
                               style={{ width: `${Math.min(completionPercentage, 100)}%` }}
                             ></div>
                           </div>
@@ -456,17 +547,16 @@ const Products = () => {
                     <tr className={`${isOpen && rowId === id ? "table-row" : "hidden"}`}>
                       <td colSpan={6} className='p-2'>
                         <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl">
-                          <thead className={`bg-teal-700 text-white uppercase tracking-wide`}>
+                          <thead className={`${bg} text-white uppercase tracking-wide`}>
                             <tr>
                               <th className='text-left px-3 py-3'>T/R</th>
                               <th className='text-left px-3 py-3'>Mahsulot(nomi/sku)</th>
-                              <th className='text-left px-3 py-3'>Sana</th>
                               <th className='text-left px-3 py-3'>kolichestvo</th>
                               <th className='text-left px-3 py-3'>narxi</th>
                               <th className='text-left px-3 py-3'>summa</th>
                               <th className='text-left px-3 py-3'>izoh</th>
-                              <th className='flex justify-end items-center gap-2 px-3 py-3'>
-                                {/* Instr <FaPlusCircle className='text-2xl' /> */}
+                              <th className='text-right px-3 py-3'>
+                                Опции
                               </th>
                             </tr>
                           </thead>
@@ -509,15 +599,6 @@ const Products = () => {
                               </td>
                               <td className='py-1.5'>
                                 <input
-                                  value={form.date}
-                                  onChange={handleFormChange}
-                                  className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
-                                  type="date"
-                                  name='date'
-                                />
-                              </td>
-                              <td className='py-1.5'>
-                                <input
                                   value={form.quantity}
                                   onChange={handleFormChange}
                                   className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
@@ -552,7 +633,7 @@ const Products = () => {
                                   placeholder='izoh'
                                 />
                               </td>
-                              <td className='cursor-pointer flex items-center justify-end gap-2 text-2xl px-3 py-3'>
+                              <td className='cursor-pointer  gap-2 text-2xl px-3 py-3'>
                                 <div>
                                   <button 
                                   onClick={handleAddProduct}
@@ -560,13 +641,6 @@ const Products = () => {
                                   title="Qo'shish"
                                 >
                                   <FaPlusCircle />
-                                </button>
-                                <button 
-                                  onClick={handleCancel}
-                                  className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-red-600 hover:text-red-800'
-                                  title="Bekor qilish"
-                                >
-                                  <MdClose />
                                 </button>
                                 </div>
                               </td>
@@ -582,37 +656,128 @@ const Products = () => {
                             )}
                             
                             {/* Mavjud stock move lar ro'yxati */}
-                            {getStockMovesForCurrentFaktura(fk.invoice.id).map((item, index) => (
-                              <tr key={item.id}>
-                                <td className='text-left px-3 py-3'>{index + 1}</td>
-                                <td className='text-left px-3 py-3'>
-                                  <b>{item.name}</b> <br />
-                                  <small>{item.sku}</small>
-                                </td>
-                                <td className='text-left px-3 py-3'>{item.date}</td>
-                                <td className='text-left px-3 py-3'>{item.quantity}</td>
-                                <td className='text-left px-3 py-3'>{item.price}</td>
-                                <td className='text-left px-3 py-3'>{item.price * item.quantity}</td>
-                                <td className='text-left px-3 py-3'>{item.comment}</td>
-                                <td className='flex justify-end items-center gap-3 px-3 py-3'>
-                                  <button className='text-2xl text-yellow-600 hover:text-yellow-800'>
-                                    <BiEdit />
-                                  </button>
-                                  <button className='text-2xl text-red-600 hover:text-red-800'>
-                                    <MdClose />
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
+                            {getStockMovesForCurrentFaktura(fk.invoice.id).map((item, index) => {
+                              const isEditing = isEditingRow(item.id);
+                              
+                              return (
+                                <tr key={item.id}>
+                                  <td className='flex flex-col px-3 py-3'>
+                                    <span>{index+1}</span>
+                                  </td>
+                                  <td className='text-left px-3 py-3'>
+                                    <b>{item.name}</b> <br />
+                                    <small>{item.sku}</small>
+                                  </td>
+                                  
+                                  {/* Miqdor */}
+                                  <td className='text-left px-3 py-3'>
+                                    {isEditing ? (
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        value={getEditingRowValue(item.id, 'quantity')}
+                                        onChange={(e) => updateEditingRow(item.id, 'quantity', e.target.value)}
+                                        className="border rounded-sm px-2 py-1 w-full"
+                                      />
+                                    ) : (
+                                      <span>{item.quantity}</span>
+                                    )}
+                                  </td>
+                                  
+                                  {/* Narx */}
+                                  <td className='text-left px-3 py-3'>
+                                    {isEditing ? (
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={getEditingRowValue(item.id, 'price')}
+                                        onChange={(e) => updateEditingRow(item.id, 'price', e.target.value)}
+                                        className="border rounded-sm px-2 py-1 w-full"
+                                      />
+                                    ) : (
+                                      <span>{item.price}</span>
+                                    )}
+                                  </td>
+                                  
+                                  {/* Summa */}
+                                  <td className='text-left px-3 py-3'>
+                                    {isEditing ? (
+                                      <span className="font-semibold">
+                                        {getEditingRowValue(item.id, 'quantity') * getEditingRowValue(item.id, 'price')} so`m
+                                      </span>
+                                    ) : (
+                                      <span>{item.price * item.quantity} so`m</span>
+                                    )}
+                                  </td>
+                                  
+                                  {/* Izoh */}
+                                  <td className='relative text-left px-3 py-3'>
+                                    {isEditing ? (
+                                      <input
+                                        type="text"
+                                        value={getEditingRowValue(item.id, 'comment')}
+                                        onChange={(e) => updateEditingRow(item.id, 'comment', e.target.value)}
+                                        className="border rounded-sm px-2 py-1 w-full"
+                                      />
+                                    ) : (
+                                      <span className="truncate max-w-xs">{item.comment}</span>
+                                    )}
+                                    <span className={`absolute top-0.5 left-0.5 text-red-700 ${fk.open_amount < 0 ? "inline-block" : "hidden"}`}>
+                                      Mahsulot narxi yoki soni to`g`ri kelmadi!
+                                    </span>
+                                  </td>
+                                  
+                                  {/* Harakatlar */}
+                                  <td className='flex justify-end items-center gap-2 px-3 py-3'>
+                                    {isEditing ? (
+                                      <div className="flex gap-2">
+                                        <button 
+                                          onClick={() => saveEditingRow(item.id)}
+                                          className="text-green-600 hover:text-green-800 text-xl"
+                                          title="Saqlash"
+                                        >
+                                          <MdCheck />
+                                        </button>
+                                        <button 
+                                          onClick={() => cancelEditingRow(item.id)}
+                                          className="text-red-600 hover:text-red-800 text-xl"
+                                          title="Bekor qilish"
+                                        >
+                                          <MdCancel />
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div className="flex gap-2">
+                                        <button 
+                                          onClick={() => startEditingRow(item)}
+                                          className='text-xl text-yellow-600 hover:text-yellow-800'
+                                          title="Tahrirlash"
+                                        >
+                                          <BiEdit />
+                                        </button>
+                                        <button 
+                                          onClick={() => handleDeleteStockMove(item.id)}
+                                          className='text-xl text-red-600 hover:text-red-800'
+                                          title="O'chirish"
+                                        >
+                                          <MdClose />
+                                        </button>
+                                      </div>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                             
                             {/* Jami summa qatori */}
                             {getStockMovesForCurrentFaktura(fk.invoice.id).length > 0 && (
                               <tr className="bg-gray-100 font-bold">
-                                <td colSpan={5} className='text-right px-3 py-3'>
+                                <td colSpan={4} className='text-right px-3 py-3'>
                                   Jami:
                                 </td>
                                 <td className='text-left px-3 py-3 text-green-600'>
-                                  {calculateTotalForFaktura(fk.invoice.id)} so'm
+                                  {calculateTotalForFaktura(fk.invoice.id)} so`m
                                 </td>
                                 <td colSpan={2}></td>
                               </tr>

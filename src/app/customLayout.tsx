@@ -4,7 +4,7 @@ import React from 'react'
 const CustomLayout:React.FC<{ children: React.ReactNode}> = ({children}) => {
   return (
       <div className="min-h-screen w-full relative overflow-hidden">
-        <Header/>
+        {/* <Header/> */}
         <main className='flex w-full h-screen'>
           <SideBar/>
           {children}

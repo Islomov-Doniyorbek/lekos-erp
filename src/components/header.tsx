@@ -33,10 +33,10 @@ const Header: React.FC = () => {
 
   return (
     <header className={`w-full ${bg}`}>
-      <div className="flex py-3 justify-between">
+      <div className="flex py-1.5 justify-between">
         <div className="flex items-center gap-4 px-2 w-28 ">
           <MdMenu onClick={()=>toggleMenu()} className={`block lg:hidden text-4xl ${txt}`} />
-          <span className={`text-xl text-center font-semibold font-[cursive] ${txt}`}>LekoS ERP</span>
+          <span className={`text-2xl text-center font-semibold font-[monospace] ${txt}`}>Lekos ERP</span>
         </div>
         <div className={`flex relative justify-end items-center gap-4 px-2 w-40 ${txt} `}>
           <MdSettings onClick={()=>setIsOpenClrList(prev=>!prev)} className='text-4xl cursor-pointer font-semibold font-[cursive] hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgb(255,255,0)]' />

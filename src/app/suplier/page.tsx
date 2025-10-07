@@ -215,7 +215,7 @@ Status: ${row.status?.status || 0}
   return (
     <CustomLayout>
       <div className={`transition duration-500 ${mainBg} w-full px-6 py-6`}>
-        <h1 className="text-xl font-bold mb-4">Yetkazib beruvchilar</h1>
+        <h1 className="text-xl font-bold mb-4">Список поставщиков</h1>
 
         <div className="overflow-x-auto">
           <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl overflow-hidden">

@@ -102,7 +102,7 @@ const MProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 
 
-  const [bg, setBg] = useState('bg-[#013d8ce6]')
+  const [bg, setBg] = useState('bg-[#0154c1]')
   const [bg2, setBg2] = useState('bg-[#013d8c]')
   const [mainBg, setMainBg] = useState('bg-white')
   const [txt, setTxt] = useState('text-blue-100')

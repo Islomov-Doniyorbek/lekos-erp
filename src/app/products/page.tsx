@@ -102,13 +102,13 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   return (
     <CustomLayout>
         <div className={`${mainBg} w-full px-6 py-6`}>
-          <h1 className={`text-xl font-bold mb-4`}>Товары</h1>
+          <h1 className={`text-xl font-bold mb-4`}>Список продуктов</h1>
           <div className="overflow-x-auto">
             <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl overflow-hidden">
                 <thead className={`${bg2} text-white uppercase tracking-wide`}>
                     <tr>
                         <th className="px-3 py-3 text-left">
-                            Tr
+                            #
                         </th>
                         <th className="px-3 py-3 text-left">
                             Nomi

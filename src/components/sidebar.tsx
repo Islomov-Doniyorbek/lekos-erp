@@ -2,6 +2,7 @@
 
 import api from '@/app/auth';
 import { useM } from '@/app/context';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
@@ -10,7 +11,7 @@ import { FaBox, FaProductHunt, FaShippingFast, FaUser } from 'react-icons/fa';
 import { FaBoxArchive} from 'react-icons/fa6';
 import { GiBuyCard } from 'react-icons/gi';
 import { MdDashboard, MdPointOfSale } from 'react-icons/md';
-
+import Logo from "../../public/logo-2-vectr.svg"
 interface sidebarProps {
     id: number;
     ico: React.ReactNode;
@@ -24,50 +25,50 @@ const SideBar = () => {
     const sideIcons:sidebarProps[] = [
         {
             id:0,
-            ico: <MdDashboard/>,
-            title: "Dashboard",
+            ico: <Image width={40} height={40} className='rounded-full' src={Logo} alt={"Logo"}/>,
+            title: "Главный",
             path: "/dashboard",
             count: null
         },
         {
             id:4,
             ico: <MdPointOfSale/>,
-            title: "Sotuvlar",
+            title: "Продажи",
             path: "/sales",
             count: null
         },
         {
             id:5,
             ico: <GiBuyCard/>,
-            title: "Xaridlar",
+            title: "Покупки",
             path: "/purchases",
             count: null
         },
         {
             id:3,
             ico: <FaBoxArchive/>,
-            title: "Ombor",
+            title: "Склад",
             path: "/stock",
             count: fakturaCount
         },
         {
             id:1,
             ico: <FaUser/>,
-            title: "Mijoz",
+            title: "Клиент",
             path: "/customer",
             count: null
         },
         {
             id:2,
             ico: <FaShippingFast/>,
-            title: "Yetkazib beruvchi",
+            title: "Поставщик",
             path: "/suplier",
             count: null
         },
         {
             id:23,
             ico: <FaBox/>,
-            title: "Mahsulot",
+            title: "Продукт",
             path: "/products",
             count: null
         },
@@ -117,6 +118,7 @@ const SideBar = () => {
                 )
             })
         }
+        <Image src="" alt="" />
     </div>
   )
 }

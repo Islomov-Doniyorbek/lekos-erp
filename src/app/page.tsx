@@ -38,7 +38,7 @@ export default function Home() {
         <meta property="og:description" content="Mijozlar va yetkazib beruvchilar uchun qulay boshqaruv tizimi." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://sizning-sayt.com/" />
-        <meta property="og:image" content="https://sizning-sayt.com/preview.png" />
+        <link rel="icon" href="/crm/public/life-eco-modern.png" />
       </Head>
       <button className="px-3 py-2 bg-blue-700 cursor-pointer relative top-3.5 left-3.5">
         <Link className="text-amber-50" href={"/auth"}>Auth</Link>
