@@ -820,7 +820,7 @@ const Sales = () => {
                                   {doc.move_type === "out" ? "Счет-фактура" : "Платежное поручение"}
                                 </td>
                                 <td colSpan={2} className='text-left px-3 py-3'>
-                                  № {doc.doc_num} от {doc.date}
+                                  {doc.doc_num==null ? doc.date : `№${doc.doc_num} от ${doc.date}`}
                                 </td>
                                 <td className='text-left px-3 py-3'>{doc.amount.toLocaleString()}</td>
                                 <td className='text-left px-3 py-3'>{doc.comment}</td>

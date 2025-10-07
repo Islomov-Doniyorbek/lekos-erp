@@ -264,13 +264,13 @@ Status: ${row.status?.status || 0}
                       {renderEditableField(row, 'description', 'Qisqacha bio')}
                     </td>
                     <td className="px-3 py-2 text-green-600">
-                      {row.status?.status && row.status.status > 0
-                        ? row.status.status.toLocaleString("uz-UZ").replace(/,/g, " ")
+                      {row.balance && row.balance > 0
+                        ? row.balance.toLocaleString("uz-UZ").replace(/,/g, " ")
                         : "0"}
                     </td>
                     <td className="px-3 py-2 text-red-600">
-                      {row.status?.status && row.status.status < 0
-                        ? Math.abs(row.status.status).toLocaleString("uz-UZ").replace(/,/g, " ")
+                      {row.balance && row.balance < 0
+                        ? Math.abs(row.balance).toLocaleString("uz-UZ").replace(/,/g, " ")
                         : "0"}
                     </td>
                     <td className="px-3 py-2">
