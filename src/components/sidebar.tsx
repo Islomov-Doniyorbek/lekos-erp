@@ -107,10 +107,10 @@ const SideBar = () => {
                     <Link onClick={()=>{
                         toggleMenu();
                     }} 
-                    className={`${bg2} ${pathName == item.path ? "bg-white text-[#0053d9] rounded-l-full" : `${txt}`} py-2 lg:py-4 w-full 
+                    className={`${bg2} ${pathName == item.path ? "bg-white text-[#0053d9]" : `${txt}`} py-2 lg:py-4 w-full 
                       flex  relative
-                     flex-col gap-1 lg:gap-1.5 rounded-l-2xl lg:rounded-l-4xl
-                     items-center hover:bg-white transition duration-700 hover:text-[#0053d9] `} key={item.id} href={item.path}>
+                     flex-col gap-1 lg:gap-1.5 rounded-l-full
+                     items-center hover:bg-white hover:rounded-l-full transition duration-700 hover:text-[#0053d9] `} key={item.id} href={item.path}>
                             <span className='text-xl'>{item.ico}</span>
                             <span className='text-lg text-center'>{item.title}</span>
                             <div className={`${item.count !=null ? (item.count > 0 ? "block" : "hidden") : "hidden"} absolute flex items-center justify-center w-5 h-5 rounded-full bg-red-500 left-6 top-2`}>{item.count!=null ? item.count : null}</div>

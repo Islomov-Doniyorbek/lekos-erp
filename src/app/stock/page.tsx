@@ -641,16 +641,14 @@ const Products = () => {
                                   placeholder='izoh'
                                 />
                               </td>
-                              <td className='cursor-pointer  gap-2 text-2xl px-3 py-3'>
-                                <div>
+                              <td className='cursor-pointer text-right  gap-2 text-2xl px-3 py-3'>
                                   <button 
                                   onClick={handleAddProduct}
-                                  className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-green-600 hover:text-green-800'
+                                  className='cursor-pointerw-8 h-8 text-xl text-green-600 hover:text-green-800'
                                   title="Qo'shish"
                                 >
                                   <FaPlusCircle />
                                 </button>
-                                </div>
                               </td>
                             </tr>
                             

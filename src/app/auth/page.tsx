@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useM } from '../context'
 import { MdDangerous } from 'react-icons/md'
+import Image from 'next/image'
+import Logo from "../../../public/logo-2-vectr.svg"
 const Auth: React.FC = () => {
   const router = useRouter()
   const [password, setPassword] = useState('')
@@ -34,13 +36,14 @@ const Auth: React.FC = () => {
   }
 };
 
-  const handleRegister = async (e: React.FormEvent) => {
+const handleRegister = async (e: React.FormEvent) => {
   e.preventDefault()
   try {
     const userData = await register(email, password, fullname, username, stir, phone) // ✅ tartib to‘g‘rilandi
     console.log("User info:", userData)
     alert("Success")
     setIsForm(false)
+    router.push("/login");
     setIsForm(true)
   } catch (err) {
     alert(err || "Xatolik yuz berdi")
@@ -60,11 +63,12 @@ const Auth: React.FC = () => {
     <div className='w-full min-h-screen'>
       <div className="w-full h-full grid grid-cols-1 md:grid-cols-2">
         <div className="col h-screen hidden md:flex justify-center items-center bg-[#514EF3]">
-          <h1 className='text-4xl text-zinc-200'>
-            Product Management System
+          <h1 className='text-7xl text-zinc-200'>
+            ERP
           </h1>
         </div>
-        <div className="col h-screen flex justify-center items-center">
+        <div className="col h-screen flex flex-col justify-between items-center">
+          <p></p>
           <div className="wrapper w-full">
             <form onSubmit={handleLogin} className={`w-full ${isForm ? "hidden" : "flex"} flex-col gap-5 items-center`}>
               <h3>Login</h3>
@@ -173,6 +177,9 @@ const Auth: React.FC = () => {
               </p>
             </form>
           </div>
+          <p className='flex gap-1'>
+            By Lekos ERP <Image width={40} height={40} src={Logo} alt="12" />
+          </p>
         </div>
       </div>
     </div>
