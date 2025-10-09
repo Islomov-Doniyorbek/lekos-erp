@@ -24,7 +24,11 @@ export default function Home() {
 
   if (!ready) {
     // window.lo
-    return <p>Loading...</p>
+    return (
+      <div className=" w-full min-h-screen flex items-center justify-center">
+        <p>Yuklanmoqda...</p>
+      </div>
+    )
   };
 
   return (

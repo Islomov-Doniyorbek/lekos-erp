@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import CustomLayout from '../customLayout';
 import { FaCheckCircle, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
-import { MdAddToQueue, MdClose } from 'react-icons/md';
+import { MdAddToQueue, MdClose, MdEdit } from 'react-icons/md';
 import { FaCircle } from 'react-icons/fa6';
 import { useM } from '../context';
 import api from '../auth';
@@ -187,23 +187,23 @@ Status: ${row.status?.status || 0}
 
     return (
       <div className="flex justify-center gap-2 items-center">
-        <button 
+        {/* <button 
           onClick={() => handleViewDetails(row)}
           className="p-2 bg-stone-200 hover:bg-emerald-400 transition rounded-full" 
           title="Batafsil ma'lumot"
         >
           <MdAddToQueue />
-        </button>
+        </button> */}
         <button 
           onClick={() => startEditing(row)}
-          className="p-2 bg-yellow-600 hover:bg-yellow-400 transition rounded-full" 
+          className="p-2 text-yellow-500 text-lg hover:bg-yellow-200 transition rounded-full" 
           title="Tahrirlash"
         >
-          <FaEdit />
+          <MdEdit />
         </button>
         <button
           onClick={() => deleteCounterParty(row.id)}
-          className="p-2 bg-red-200 hover:bg-red-400 transition rounded-full"
+          className="p-2 text-lg text-red-500 hover:bg-red-200 transition rounded-full"
           title="O'chirish"
         >
           <MdClose />
@@ -214,11 +214,10 @@ Status: ${row.status?.status || 0}
 
   return (
     <CustomLayout>
-      <div className={`transition duration-500 ${mainBg} w-full px-6 py-6`}>
-        <h1 className="text-xl font-bold mb-4">Список поставщиков</h1>
-
-        <div className="overflow-x-auto">
-          <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl overflow-hidden">
+      <div className="w-full p-6 max-h-screen overflow-y-auto">
+        <div className="title mb-4 text-2xl font-semibold">Список поставщиков</div>
+        <div className="overflow-x-auto border-[1px] border-gray-100 border-t-0 rounded-2xl">
+          <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
             <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
               <tr>
                 <th className="px-3 py-3 text-left">Tr</th>

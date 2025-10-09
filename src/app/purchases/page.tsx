@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
 import { MdCheck, MdClose, MdEdit } from 'react-icons/md'
-import { FaPlus, FaPlusCircle, FaTrash } from 'react-icons/fa'
+import { FaArrowAltCircleDown, FaArrowAltCircleUp, FaPlus, FaPlusCircle, FaTrash } from 'react-icons/fa'
 import type { components, paths } from "../../../types";
 import api from '../auth'
 import { useM } from '../context'
+import { formatAmount, formatDate } from '../formatter'
 
 interface Supplier {
   id: number;
@@ -526,23 +527,20 @@ const Purchase = () => {
   };
 
   // Debit va kredit summalarini hisoblash - XARIDLAR UCHUN
-  const calculateTotals = () => {
-    const totalDebit = inRows
-      .filter(item => item.move_type === "in") // Xaridlar uchun "in" - debit (mahsulot kelishi)
-      .reduce((sum, item) => sum + item.amount, 0);
-    
-    const totalKredit = inRows
-      .filter(item => item.move_type === "out") // Xaridlar uchun "out" - kredit (to'lov)
-      .reduce((sum, item) => sum + item.amount, 0);
-    
-    return { totalDebit, totalKredit };
-  };
+  
 
-  const { totalDebit, totalKredit } = calculateTotals();
+
+
+
+  
+
+
+
+  // const { totalDebit, totalKredit } = calculateTotals();
   const {bg, bg2, txt} = useM()
   return (
     <CustomLayout>
-      <div className='w-full p-6 max-h-screen overflow-y-auto'>
+      <div className="w-full p-6 max-h-screen overflow-y-auto">
         <div className="title mb-4 text-2xl font-semibold">Список договоров на покупку</div>
         <div className="overflow-x-auto border-[1px] border-gray-100 border-t-0 rounded-2xl">
           <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
@@ -655,21 +653,21 @@ const Purchase = () => {
                       <b>{item.name}</b> <br />
                       <small>{item.tin ? item.tin : "J.SH."}</small>
                     </td>
-                    <td className='text-left px-3 py-2'>{item.date}</td>
+                    <td className='text-left px-3 py-2'>{formatDate(item.date)}</td>
                     <td className='text-left px-3 py-2'>{item.doc_num}</td>
                     <td className='text-left px-3 py-2'>{item.comment}</td>
                     <td className='text-left px-3 py-2'>
-                      {item.total && item.total > 0 ? item.total : 0}
+                      {item.total && item.total > 0 ? formatAmount(item.total) : 0}
                     </td>
                     <td className='text-left px-3 py-2'>
-                      {item.total && item.total < 0 ? Math.abs(item.total) : 0}
+                      {item.total && item.total < 0 ? formatAmount(Math.abs(item.total)) : 0}
                     </td>
                     <td className='flex items-center justify-end gap-2 px-3 py-2'>
-                      <button className='cursor-pointer flex items-center justify-center text-xl w-8 h-8 font-semibold text-teal-700'>
+                      <button className='cursor-pointer flex items-center justify-center text-xl w-8 h-8 font-semibold'>
                         {innerTableId === item.id ? (
-                          <MdClose onClick={() => toggleInnerTable(item.id)} />
+                          <FaArrowAltCircleUp className='text-red-700' onClick={() => toggleInnerTable(item.id)} />
                         ) : (
-                          <FaPlus onClick={() => toggleInnerTable(item.id)} />
+                          <FaArrowAltCircleDown className='text-teal-700' onClick={() => toggleInnerTable(item.id)} />
                         )}
                       </button>
                       <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-yellow-600'>
@@ -839,15 +837,15 @@ const Purchase = () => {
                                   {doc.move_type === "in" ? "Счет-фактура" : "Платежное поручение"}
                                 </td>
                                 <td colSpan={2} className='text-left px-3 py-3'>
-                                  {doc.doc_num==null ? doc.date : `№${doc.doc_num} от ${doc.date}`}
+                                  {doc.doc_num==null ? formatDate(doc.date) : `№${doc.doc_num} от ${formatDate(doc.date)}`}
                                 </td>
-                                <td className='text-left px-3 py-3'>{doc.amount.toLocaleString()}</td>
+                                <td className='text-left px-3 py-3'>{formatAmount(doc.amount)}</td>
                                 <td className='text-left px-3 py-3'>{doc.comment}</td>
                                 <td className='text-left px-3 py-3'>
-                                  {doc.move_type === "in" ? doc.amount.toLocaleString() : 0}
+                                  {doc.move_type === "out" ? formatAmount(Number(doc.amount)) : 0}
                                 </td>
                                 <td className='text-left px-3 py-3'>
-                                  {doc.move_type === "out" ? doc.amount.toLocaleString() : 0}
+                                  {doc.move_type === "in" ? formatAmount(Number(doc.amount)) : 0}
                                 </td>
                                 <td className='flex items-center justify-end gap-2 px-3 py-3'>
                                   <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-yellow-600'>
@@ -938,11 +936,11 @@ const Purchase = () => {
                             <td colSpan={6} className='text-left px-3 py-3'></td>
                             <td className='text-left px-3 py-3'>
                               Jami D: <br />
-                              {item.total_debit?.toLocaleString()}
+                              {formatAmount(Number(item.total_debit))}
                             </td>
                             <td className='text-left px-3 py-3'>
                               Jami K: <br />
-                              {item.total_credit?.toLocaleString()}
+                              {formatAmount(Number(item.total_credit))}
                             </td>
                             <td className='text-right px-3 py-3'></td>
                           </tr>

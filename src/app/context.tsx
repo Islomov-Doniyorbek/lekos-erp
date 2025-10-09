@@ -4,7 +4,9 @@ import axios from 'axios'
 
 type MenuContextType = {
   isOpen: boolean
+  isCLosed: boolean
   toggleMenu: () => void
+  toggleAlert: () => void
   setFakturaCountQuant: (c: number) => void
   setHeaderTitle: (title: string) => void
   register: (
@@ -29,10 +31,12 @@ export const Mcontext = createContext<MenuContextType | undefined>(undefined)
 
 const MProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [isCLosed, setIsClosed] = useState(false)
   // const [isSideBar, setIsSidebar] = useState(false)
   const [header, setHeader] = useState('')
   const [fakturaCount, setFakturaCount] = useState(0)
   const toggleMenu = () => setIsOpen((prev) => !prev)
+  const toggleAlert = () => setIsClosed((prev) => !prev)
   const setHeaderTitle = (title: string) => setHeader(title)
   const setFakturaCountQuant = (c: number) => setFakturaCount(c)
 
@@ -120,7 +124,9 @@ const MProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         setHeaderTitle,
         setFakturaCountQuant,
         toggleMenu,
+        toggleAlert,
         isOpen,
+        isCLosed,
         header,
         fakturaCount,
         register,

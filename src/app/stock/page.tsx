@@ -1,9 +1,10 @@
 'use client'
+import { formatAmount, formatDate } from '../formatter'
 import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
 import { BiEdit } from 'react-icons/bi'
 import { FaArrowAltCircleDown, FaPlusCircle } from 'react-icons/fa'
-import { MdClose, MdCheck, MdCancel } from 'react-icons/md'
+import { MdClose, MdCheck, MdCancel, MdEdit } from 'react-icons/md'
 import api from '../auth'
 import { useM } from '../context'
 import { TbArrowDownLeft, TbArrowUpRight } from 'react-icons/tb'
@@ -493,6 +494,7 @@ const Products = () => {
                 <th className='text-left px-3 py-3'>Тип</th>
                 <th className='text-left px-3 py-3'>Faktura</th>
                 <th className='text-left px-3 py-3'>Summa</th>
+                <th className='text-left px-3 py-3'>Описание</th>
                 <th className='text-left px-3 py-3'>Status</th>
                 <th className='text-right px-3 py-3'></th>
               </tr>
@@ -519,18 +521,21 @@ const Products = () => {
                       <td className='text-left px-3 py-3'>
                         {fk.invoice.doc_num ? (
                           <>
-                            {fk.invoice.date} sanadagi <strong>{fk.invoice.doc_num}</strong> raqamli
+                            {formatDate(fk.invoice.date)} sanadagi <strong>{fk.invoice.doc_num}</strong> raqamli
                           </>
                         ) : (
-                          fk.invoice.date
+                          formatDate(fk.invoice.date)
                         )}
                       </td>
                       <td className='text-left px-3 py-3'>
-                        {fk.closed_amount} / {fk.invoice.amount} so`m
+                        {formatAmount(Number(fk.closed_amount))} / {formatAmount(Number(fk.invoice.amount))} so`m
                         <br />
                         <small className="text-green-600 font-semibold">
-                          (Ochiq summa: {fk.open_amount} so`m)
+                          (Ochiq summa: {formatAmount(Number(fk.open_amount))} so`m)
                         </small>
+                      </td>
+                      <td className='text-left px-3 py-3'>
+                        {fk.invoice.comment}
                       </td>
                       <td className='text-left px-3 py-3'>
                         <div className="flex items-center gap-2">
@@ -702,7 +707,7 @@ const Products = () => {
                                         className="border rounded-sm px-2 py-1 w-full"
                                       />
                                     ) : (
-                                      <span>{item.price}</span>
+                                      <span>{formatAmount(Number(item.price))}</span>
                                     )}
                                   </td>
                                   
@@ -713,7 +718,7 @@ const Products = () => {
                                         {getEditingRowValue(item.id, 'quantity') * getEditingRowValue(item.id, 'price')} so`m
                                       </span>
                                     ) : (
-                                      <span>{item.price * item.quantity} so`m</span>
+                                      <span>{formatAmount(item.price * item.quantity)} so`m</span>
                                     )}
                                   </td>
                                   
@@ -760,7 +765,7 @@ const Products = () => {
                                           className='text-xl text-yellow-600 hover:text-yellow-800'
                                           title="Tahrirlash"
                                         >
-                                          <BiEdit />
+                                          <MdEdit />
                                         </button>
                                         <button 
                                           onClick={() => handleDeleteStockMove(item.id)}
@@ -783,7 +788,7 @@ const Products = () => {
                                   Jami:
                                 </td>
                                 <td className='text-left px-3 py-3 text-green-600'>
-                                  {calculateTotalForFaktura(fk.invoice.id)} so`m
+                                  {formatAmount(calculateTotalForFaktura(fk.invoice.id))} so`m
                                 </td>
                                 <td colSpan={2}></td>
                               </tr>
