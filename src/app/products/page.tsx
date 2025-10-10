@@ -347,7 +347,7 @@ const updateProduct = async () => {
                     ))
                     ) : (
                         <tr>
-                        <td className='py-2 text-center' colSpan={8}>
+                        <td className='py-3 text-center' colSpan={8}>
                             У вас нет зарегистрированных продуктов.
                         </td>
                     </tr>

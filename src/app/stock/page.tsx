@@ -798,8 +798,8 @@ const Products = () => {
                             {/* Agar stock move lar bo'lmasa */}
                             {!loadingStockMoves && getStockMovesForCurrentFaktura(fk.invoice.id).length === 0 && (
                               <tr>
-                                <td colSpan={8} className="text-center px-3 py-3 text-gray-500">
-                                  Hozircha mahsulotlar mavjud emas
+                                <td colSpan={8} className="text-center py-3 text-gray-500">
+                                  У вас нет зарегистрированных счетов-фактур.
                                 </td>
                               </tr>
                             )}
