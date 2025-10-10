@@ -220,7 +220,7 @@ Status: ${row.status?.status || 0}
           <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
             <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
               <tr>
-                <th className="px-3 py-3 text-left">Tr</th>
+                <th className="px-3 py-3 text-left">#</th>
                 <th className="px-3 py-3 text-left">Клиент</th>
                 <th className="px-3 py-3 text-left">ННН</th>
                 <th className="px-3 py-3 text-left">Номер</th>
