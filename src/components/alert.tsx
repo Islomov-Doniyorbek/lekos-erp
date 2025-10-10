@@ -1,18 +1,28 @@
-import { useM } from '@/app/context'
-import React, { useState } from 'react'
+'use client'
+import React from 'react'
 
-const Alert = () => {
-    const [isConfirm, setIsConfirm] = useState(false)
-    const {isCLosed, toggleAlert} = useM()
+export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
+  if (open) return null
+
   return (
-    <div className={`${isCLosed ? "block" : "hidden"} z-50 fixed top-1.5 left-1/2 -translate-x-1/2`}>
-      <p>Amalni tasdiqlaysizmi?!</p>
-      <p>
-        <button onClick={()=>{setIsConfirm(true); toggleAlert()}}>Ha</button>
-        <button onClick={()=>{setIsConfirm(false); toggleAlert()}}>Yo`q</button>
-      </p>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-2xl shadow-lg w-80 text-center">
+        <p className="text-lg mb-4">{message || 'Ishonchingiz komilmi?'}</p>
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={onConfirm}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Ha
+          </button>
+          <button
+            onClick={onCancel}
+            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+          >
+            Yo‘q
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
-
-export default Alert

@@ -82,7 +82,7 @@ const SideBar = () => {
                 res.data.forEach(fk => {
                 if (fk.open_amount != 0) {
                     i++;
-                    console.log(fk);
+                    // console.log(fk);
                     
                 }
                 });
@@ -95,7 +95,7 @@ const SideBar = () => {
         getFaktura()
     }, [])
     
-    console.log(fakturaCount);
+    // console.log(fakturaCount);
     const pathName = usePathname()
 // bg-[#013d8c]
   return (
@@ -118,7 +118,7 @@ const SideBar = () => {
                 )
             })
         }
-        <Image src="" alt="" />
+        {/* <Image src="" alt="" /> */}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit, FaPlusCircle } from 'react-icons/fa';
 import { MdAddToQueue, MdClose, MdEdit, MdSave, MdCancel } from 'react-icons/md';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { useM } from '../context';
@@ -174,6 +174,12 @@ const updateProduct = async () => {
             alert("O'chirishda xatolik yuz berdi");
         }
     }
+
+
+
+
+
+    // const [showModal, setShowModal] = useState
 // Список продуктов
   return (
     <CustomLayout>
@@ -184,20 +190,15 @@ const updateProduct = async () => {
             <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
                     <tr>
                         <th className="px-3 py-3 text-left">#</th>
-                        <th className="px-3 py-3 text-left">Nomi</th>
-                        <th className="px-3 py-3 text-left">SKU</th>
-                        <th className="px-3 py-3 text-left">Soni</th>
-                        <th className="px-3 py-3 text-left">Birligi</th>
-                        <th className="px-3 py-3 text-left">Narxi (1 birlikda)</th>
-                        <th className="px-3 py-3 text-left">Ta`rif</th>
+                        <th className="px-3 py-3 text-left">Название</th>
+                        <th className="px-3 py-3 text-left">Артикул</th>
+                        <th className="px-3 py-3 text-left">Количество</th>
+                        <th className="px-3 py-3 text-left">Ед. изм.</th>
+                        <th className="px-3 py-3 text-left">Цена</th>
+                        <th className="px-3 py-3 text-left">Описание</th>
                         <th className="px-3 py-3 text-center flex items-center justify-center gap-2">
-                            Instr
-                            <button
-                              className="p-2 bg-emerald-500 hover:bg-emerald-600 transition text-white rounded-full shadow"
-                              onClick={() => setIsOpen(prev => !prev)}
-                            >
-                              <FaCirclePlus />
-                            </button>
+                            Опции
+                            <FaPlusCircle className='cursor-pointer text-2xl'  onClick={() => setIsOpen(prev => !prev)}/>
                         </th>
                     </tr>
 
@@ -223,7 +224,8 @@ const updateProduct = async () => {
                     </tr>
                 </thead>
                 <tbody className={`divide-y divide-gray-200 ${mainBg==="bg-gray-950" ? "text-white" : "text-black"}} `}>
-                    {product.map(item => (
+                    {product.length > 0 ? (
+                        product.map(item => (
                         <tr key={item.id} className="hover:bg-red-50 transition">
                             <td className="px-3 py-2">{item.id}</td>
                             
@@ -342,7 +344,15 @@ const updateProduct = async () => {
                                 )}
                             </td>
                         </tr>
-                    ))}
+                    ))
+                    ) : (
+                        <tr>
+                        <td className='py-2 text-center' colSpan={8}>
+                            У вас нет зарегистрированных продуктов.
+                        </td>
+                    </tr>
+                    )}
+                    
                 </tbody>
             </table>
           </div>

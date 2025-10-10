@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import CustomLayout from '../customLayout';
-import { FaCheckCircle, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
+import { FaCheckCircle, FaEdit, FaPlusCircle, FaSave, FaTimes } from 'react-icons/fa';
 import { MdAddToQueue, MdCheck, MdClose, MdEdit } from 'react-icons/md';
 import { FaCircle } from 'react-icons/fa6';
 import { useM } from '../context';
@@ -221,13 +221,13 @@ Status: ${row.status?.status || 0}
             <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
               <tr>
                 <th className="px-3 py-3 text-left">Tr</th>
-                <th className="px-3 py-3 text-left">Korxona</th>
-                <th className="px-3 py-3 text-left">STIR</th>
-                <th className="px-3 py-3 text-left">Telefon raqami</th>
-                <th className="px-3 py-3 text-left">Qisqacha bio</th>
-                <th className="px-3 py-3 text-left">Debit</th>
-                <th className="px-3 py-3 text-left">Kredit</th>
-                <th className="px-3 py-3 text-center">Amallar</th>
+                <th className="px-3 py-3 text-left">Клиент</th>
+                <th className="px-3 py-3 text-left">ННН</th>
+                <th className="px-3 py-3 text-left">Номер</th>
+                <th className="px-3 py-3 text-left">Био</th>
+                <th className="px-3 py-3 text-left">Дебит</th>
+                <th className="px-3 py-3 text-left">Кредит</th>
+                <th className="px-3 py-3 flex items-center justify-center gap-1.5">Опции <FaPlusCircle className='cursor-pointer text-2xl'/></th>
               </tr>
             </thead>
 
@@ -235,7 +235,7 @@ Status: ${row.status?.status || 0}
               {loading ? (
                 <tr>
                   <td colSpan={8} className="px-3 py-6 text-center text-gray-500">
-                    Ma'lumotlar yuklanmoqda...
+                    Загрузка...
                   </td>
                 </tr>
               ) : rows.length > 0 ? (
@@ -280,7 +280,7 @@ Status: ${row.status?.status || 0}
               ) : (
                 <tr>
                   <td colSpan={8} className="px-3 py-6 text-center text-gray-500">
-                    Mijozlar mavjud emas
+                    У вас нет зарегистрированных клиентов.
                   </td>
                 </tr>
               )}

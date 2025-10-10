@@ -134,7 +134,7 @@ const Sales = () => {
     };
 
     getData();
-  }, []);
+  }, [rows, inRows]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -146,7 +146,7 @@ const Sales = () => {
 
   const addRow = async () => {
     try {
-      if (!form.customer || !form.sana || !form.raqam) {
+      if (!form.customer || !form.sana) {
         alert("Iltimos, majburiy maydonlarni to'ldiring!");
         return;
       }
@@ -181,6 +181,7 @@ const Sales = () => {
               tin: form.stir || null
             },
             contract_data: {
+              agent_id: 0,
               type: "sales",
               date: form.sana,
               doc_num: form.raqam,
@@ -546,7 +547,7 @@ const Sales = () => {
               <tr className={`${isInputRow ? "table-row" : "hidden"}`}>
                 <td className='text-left px-3 py-3'>
                   <span className={`${valCustomer ? "inline-block" : "hidden"} text-blue-700 font-semibold text-[10px]`}>
-                    Yangi
+                    Новый
                   </span>
                 </td>
                 <td className='text-left px-3 py-3'>
@@ -718,15 +719,15 @@ const Sales = () => {
                       <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl overflow-hidden">
                         <thead className={`${bg} text-white uppercase tracking-wide`}>
                           <tr>
-                            <th className='text-left px-3 py-3'>T/R</th>
-                            <th className='text-left px-3 py-3'>Turi</th>
-                            <th colSpan={2} className='text-left px-3 py-3'>Hujjat</th>
-                            <th className='text-left px-3 py-3'>Summa</th>
-                            <th className='text-left px-3 py-3'>Izoh</th>
-                            <th className='text-left px-3 py-3'>Debit</th>
-                            <th className='text-left px-3 py-3'>Kredit</th>
+                            <th className='text-left px-3 py-3'>#</th>
+                            <th className='text-left px-3 py-3'>Тип</th>
+                            <th colSpan={2} className='text-left px-3 py-3'>Документ</th>
+                            <th className='text-left px-3 py-3'>Сумма</th>
+                            <th className='text-left px-3 py-3'>Комметарий</th>
+                            <th className="px-3 py-3 text-left">Дебит</th>
+                            <th className="px-3 py-3 text-left">Кредит</th>
                             <th className='px-3 py-3 flex gap-2 justify-end items-center'>
-                              Instr 
+                              Опции 
                               <FaPlusCircle 
                                 className='cursor-pointer text-2xl' 
                                 onClick={() => setIsInputInRow(prev => !prev)} 
@@ -745,8 +746,8 @@ const Sales = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 name="move_type" 
                               >
-                                <option value="out">Счет-фактура (чиким) - Mahsulot</option>
-                                <option value="in">Платежное поручение (кирим) - To'lov</option>
+                                <option value="out">&#8599; Счет-фактура  </option>
+                                <option value="in">&#8601; Платежное поручение </option>
                               </select>
                             </td>
                             <td>
@@ -807,7 +808,7 @@ const Sales = () => {
                               <tr className={`${isEditInRow && editInRowId === doc.id ? "hidden" : "table-row"} border-b border-t hover:bg-emerald-100`}>
                                 <td className='text-left px-3 py-3'>{index + 1}</td>
                                 <td className='text-left px-3 py-3'>
-                                  {doc.move_type === "out" ? "Счет-фактура" : "Платежное поручение"}
+                                  {doc.move_type === "out" ? <span>&#8599; Счет-фактура</span> : <span>&#8601; Платежное поручение</span>}
                                 </td>
                                 <td colSpan={2} className='text-left px-3 py-3'>
                                   {doc.doc_num==null ? formatDate(doc.date) : `№${doc.doc_num} от ${formatDate(doc.date)}`}
@@ -838,15 +839,7 @@ const Sales = () => {
                                   </span>
                                 </td>
                                 <td>
-                                  <select 
-                                    value={editInForm.move_type} 
-                                    onChange={handleInEditChange} 
-                                    className="border rounded-sm text-left px-3 py-1.5 w-full" 
-                                    name="move_type" 
-                                  >
-                                    <option value="out">Счет-фактура (чиким) - Mahsulot</option>
-                                    <option value="in">Платежное поручение (кирим) - To'lov</option>
-                                  </select>
+                                  {editInForm.move_type == "out" ? "Счет-фактура" : "Платежное поручение"}
                                 </td>
                                 <td>
                                   <input 
@@ -905,11 +898,11 @@ const Sales = () => {
                           <tr className='border-t-2 font-semibold'>
                             <td colSpan={6} className='text-left px-3 py-3'></td>
                             <td className='text-left px-3 py-3'>
-                              Jami D: <br />
+                              Общий дебит: <br />
                               {formatAmount(Number(item.total_debit))}
                             </td>
                             <td className='text-left px-3 py-3'>
-                              Jami K: <br />
+                              Общий кредит: <br />
                               {formatAmount(Number(item.total_credit))}
                             </td>
                             <td className='text-right px-3 py-3'></td>
@@ -922,7 +915,7 @@ const Sales = () => {
               ))
               ) : (
                 <tr>
-                  <td colSpan={8} className='text-center px-3 py-3'>Bitimlar mavjud emas</td>
+                  <td colSpan={8} className='text-center px-3 py-3'>У вас нет зарегистрированных договоров.</td>
                 </tr>
               )}
             </tbody>

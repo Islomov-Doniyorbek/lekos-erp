@@ -490,12 +490,12 @@ const Products = () => {
           <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
             <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
               <tr>
-                <th className='text-left px-3 py-3'>T/R</th>
+                <th className='text-left px-3 py-3'>#</th>
                 <th className='text-left px-3 py-3'>Тип</th>
-                <th className='text-left px-3 py-3'>Faktura</th>
-                <th className='text-left px-3 py-3'>Summa</th>
+                <th className='text-left px-3 py-3'>Дата и номер</th>
+                <th className='text-left px-3 py-3'>Сумма</th>
                 <th className='text-left px-3 py-3'>Описание</th>
-                <th className='text-left px-3 py-3'>Status</th>
+                <th className='text-left px-3 py-3'>Статус</th>
                 <th className='text-right px-3 py-3'></th>
               </tr>
             </thead>
@@ -528,10 +528,10 @@ const Products = () => {
                         )}
                       </td>
                       <td className='text-left px-3 py-3'>
-                        {formatAmount(Number(fk.closed_amount))} / {formatAmount(Number(fk.invoice.amount))} so`m
+                        {formatAmount(Number(fk.closed_amount))} / {formatAmount(Number(fk.invoice.amount))} сум
                         <br />
                         <small className="text-green-600 font-semibold">
-                          (Ochiq summa: {formatAmount(Number(fk.open_amount))} so`m)
+                          (Открытая сумма: {formatAmount(Number(fk.open_amount))} сум)
                         </small>
                       </td>
                       <td className='text-left px-3 py-3'>
@@ -558,16 +558,17 @@ const Products = () => {
                       </td>
                     </tr>
                     <tr className={`${isOpen && rowId === id ? "table-row" : "hidden"}`}>
-                      <td colSpan={6} className='p-2'>
+                      <td colSpan={7} className='p-2'>
                         <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl">
                           <thead className={`${bg} text-white uppercase tracking-wide`}>
                             <tr>
-                              <th className='text-left px-3 py-3'>T/R</th>
-                              <th className='text-left px-3 py-3'>Mahsulot(nomi/sku)</th>
-                              <th className='text-left px-3 py-3'>kolichestvo</th>
-                              <th className='text-left px-3 py-3'>narxi</th>
-                              <th className='text-left px-3 py-3'>summa</th>
-                              <th className='text-left px-3 py-3'>izoh</th>
+                              <th className='text-left px-3 py-3'>#</th>
+                              <th className='text-left px-3 py-3'>Продукт</th>
+                              <th className='text-left px-3 py-3'>Количество</th>
+                              <th className='text-left px-3 py-3'>Цена</th>
+                              {/* <th></th> */}
+                              <th className='text-left px-3 py-3'>Сумма</th>
+                              <th className='text-left px-3 py-3'>Описание</th>
                               <th className='text-right px-3 py-3'>
                                 Опции
                               </th>
@@ -579,7 +580,7 @@ const Products = () => {
                               <td className='text-left px-3 py-3'>
                                 {isNewProduct && (
                                   <span className="inline-block text-blue-700 font-semibold text-[10px]">
-                                    Yangi
+                                    Новый
                                   </span>
                                 )}
                               </td>
@@ -634,7 +635,7 @@ const Products = () => {
                                 <span className={`${isLot ? "inline-block" : "hidden"} absolute top-1 left-0 text-[10px] text-red-600`}>Hisobdan oshib ketdi!</span>
                               </td>
                               <td className='text-left px-3 py-3 font-semibold'>
-                                {form.price * form.quantity} so`m
+                                {form.price * form.quantity} сум
                               </td>
                               <td className='py-1.5'>
                                 <input
@@ -715,10 +716,10 @@ const Products = () => {
                                   <td className='text-left px-3 py-3'>
                                     {isEditing ? (
                                       <span className="font-semibold">
-                                        {getEditingRowValue(item.id, 'quantity') * getEditingRowValue(item.id, 'price')} so`m
+                                        {getEditingRowValue(item.id, 'quantity') * getEditingRowValue(item.id, 'price')} сум
                                       </span>
                                     ) : (
-                                      <span>{formatAmount(item.price * item.quantity)} so`m</span>
+                                      <span>{formatAmount(item.price * item.quantity)} сум</span>
                                     )}
                                   </td>
                                   
@@ -788,7 +789,7 @@ const Products = () => {
                                   Jami:
                                 </td>
                                 <td className='text-left px-3 py-3 text-green-600'>
-                                  {formatAmount(calculateTotalForFaktura(fk.invoice.id))} so`m
+                                  {formatAmount(calculateTotalForFaktura(fk.invoice.id))} сум
                                 </td>
                                 <td colSpan={2}></td>
                               </tr>

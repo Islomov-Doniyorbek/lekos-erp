@@ -7,6 +7,9 @@ import type { components, paths } from "../../../types";
 import api from '../auth'
 import { useM } from '../context'
 import { formatAmount, formatDate } from '../formatter'
+import { TbArrowDownLeft } from 'react-icons/tb'
+import { Span } from 'next/dist/trace'
+import { useRouter } from 'next/navigation';
 
 interface Supplier {
   id: number;
@@ -62,6 +65,7 @@ const Purchase = () => {
   const [editRowId, setEditRowId] = useState(0)
   const [editInRowId, setEditInRowId] = useState(0)
   const [innerTableId, setInnerTableId] = useState<null | number>(null)
+  const router = useRouter()
   
   const [form, setForm] = useState<PurchaseForm>({
     id: 0,
@@ -134,7 +138,7 @@ const Purchase = () => {
     };
 
     getData();
-  }, []);
+  }, [rows, inRows]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -148,7 +152,7 @@ const Purchase = () => {
     
     
     try {
-      if (!form.supplier || !form.sana || !form.raqam) {
+      if (!form.supplier || !form.sana) {
         alert("Iltimos, majburiy maydonlarni to'ldiring!");
         return;
       }
@@ -181,6 +185,7 @@ const Purchase = () => {
               tin: form.stir || null
             },
             contract_data: {
+              agent_id: 0,
               type: "purchase",
               date: form.sana,
               doc_num: form.raqam.length > 0 ? form.raqam : null,
@@ -440,7 +445,7 @@ const Purchase = () => {
       });
 
       setIsInputInRow(false);
-
+      // router.refresh()
     } catch (error) {
       console.log(error);
       alert("Hujjat qo'shishda xatolik!");
@@ -567,7 +572,7 @@ const Purchase = () => {
               <tr className={`${isInputRow ? "table-row" : "hidden"}`}>
                 <td className='text-left px-3 py-3'>
                   <span className={`${valSupplier ? "inline-block" : "hidden"} text-blue-700 font-semibold text-[10px]`}>
-                    Yangi
+                    Новый
                   </span>
                 </td>
                 <td className='text-left px-3 py-3'>
@@ -740,20 +745,20 @@ const Purchase = () => {
                       <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl overflow-hidden">
                         <thead className={`${bg} text-white uppercase tracking-wide`}>
                           <tr>
-                            <th className='text-left px-3 py-3'>T/R</th>
-                            <th className='text-left px-3 py-3'>Turi</th>
-                            <th colSpan={2} className='text-left px-3 py-3'>Hujjat</th>
-                            <th className='text-left px-3 py-3'>Summa</th>
-                            <th className='text-left px-3 py-3'>Izoh</th>
-                            <th className='text-left px-3 py-3'>Debit</th>
-                            <th className='text-left px-3 py-3'>Kredit</th>
-                            <th className='px-3 py-3 flex gap-2 justify-end items-center'>
-                              Instr 
-                              <FaPlusCircle 
-                                className='cursor-pointer text-2xl' 
-                                onClick={() => setIsInputInRow(prev => !prev)} 
-                              />
-                            </th>
+                              <th className='text-left px-3 py-3'>#</th>
+                              <th className='text-left px-3 py-3'>Тип</th>
+                              <th colSpan={2} className='text-left px-3 py-3'>Документ</th>
+                              <th className='text-left px-3 py-3'>Сумма</th>
+                              <th className='text-left px-3 py-3'>Комметарий</th>
+                              <th className="px-3 py-3 text-left">Дебит</th>
+                              <th className="px-3 py-3 text-left">Кредит</th>
+                              <th className='px-3 py-3 flex gap-2 justify-end items-center'>
+                                Опции 
+                                <FaPlusCircle 
+                                  className='cursor-pointer text-2xl' 
+                                  onClick={() => setIsInputInRow(prev => !prev)} 
+                                />
+                              </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -769,8 +774,8 @@ const Purchase = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 name="move_type" 
                               >
-                                <option value="in">Счет-фактура (кирим) - Mahsulot</option>
-                                <option value="out">Платежное поручение (чиким) - To'lov</option>
+                                <option value="in">&#8601; Счет-фактура  </option>
+                                <option value="out">&#8599; Платежное поручение </option>
                               </select>
                             </td>
                             <td>
@@ -834,7 +839,7 @@ const Purchase = () => {
                               <tr className={`${isEditInRow && editInRowId === doc.id ? "hidden" : "table-row"} border-b border-t hover:bg-emerald-100`}>
                                 <td className='text-left px-3 py-3'>{index + 1}</td>
                                 <td className='text-left px-3 py-3'>
-                                  {doc.move_type === "in" ? "Счет-фактура" : "Платежное поручение"}
+                                  {doc.move_type === "in" ? <span>&#8601; Счет-фактура</span> : <span>&#8599; Платежное поручение</span>}
                                 </td>
                                 <td colSpan={2} className='text-left px-3 py-3'>
                                   {doc.doc_num==null ? formatDate(doc.date) : `№${doc.doc_num} от ${formatDate(doc.date)}`}
@@ -867,15 +872,7 @@ const Purchase = () => {
                                   </span>
                                 </td>
                                 <td>
-                                  <select 
-                                    value={editInForm.move_type} 
-                                    onChange={handleInEditChange} 
-                                    className="border rounded-sm text-left px-3 py-1.5 w-full" 
-                                    name="move_type" 
-                                  >
-                                    <option value="in">Счет-фактура (кирим) - Mahsulot</option>
-                                    <option value="out">Платежное поручение (чиким) - To'lov</option>
-                                  </select>
+                                  {editInForm.move_type == "in" ? "Счет-фактура" : "Платежное поручение"}
                                 </td>
                                 <td>
                                   <input 
@@ -935,11 +932,11 @@ const Purchase = () => {
                           <tr className='border-t-2 font-semibold'>
                             <td colSpan={6} className='text-left px-3 py-3'></td>
                             <td className='text-left px-3 py-3'>
-                              Jami D: <br />
+                              Общий дебит: <br />
                               {formatAmount(Number(item.total_debit))}
                             </td>
                             <td className='text-left px-3 py-3'>
-                              Jami K: <br />
+                              Общий кредит: <br />
                               {formatAmount(Number(item.total_credit))}
                             </td>
                             <td className='text-right px-3 py-3'></td>
@@ -952,7 +949,7 @@ const Purchase = () => {
               ))
               ) : (
                 <tr>
-                  <td colSpan={8} className='text-center px-3 py-3'>Bitimlar topilmadi!</td>
+                  <td colSpan={8} className='text-center px-3 py-3'>У вас нет зарегистрированных договоров.</td>
                 </tr>
               )}
             </tbody>
