@@ -786,7 +786,7 @@ const Products = () => {
                             {getStockMovesForCurrentFaktura(fk.invoice.id).length > 0 && (
                               <tr className="bg-gray-100 font-bold">
                                 <td colSpan={4} className='text-right px-3 py-3'>
-                                  Jami:
+                                  Общий:
                                 </td>
                                 <td className='text-left px-3 py-3 text-green-600'>
                                   {formatAmount(calculateTotalForFaktura(fk.invoice.id))} сум
@@ -811,7 +811,7 @@ const Products = () => {
                 );
               })) : (
                 <tr>
-                  <td colSpan={6} className='text-center px-3 py-3'>Fakturalar mavjud emas</td>
+                  <td colSpan={6} className='text-center py-3'>У вас нет зарегистрированных счетов-фактур.</td>
                 </tr>
               )}
             </tbody>

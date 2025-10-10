@@ -234,7 +234,7 @@ Status: ${row.status?.status || 0}
             <tbody className={`divide-y divide-gray-200 ${txt}`}>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center text-gray-500">
+                  <td colSpan={8} className=" py-3 text-center text-gray-500">
                    Загрузка...
                   </td>
                 </tr>
