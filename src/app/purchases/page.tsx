@@ -949,7 +949,7 @@ const Purchase = () => {
               ))
               ) : (
                 <tr>
-                  <td colSpan={8} className='text-center py-3'>У вас нет зарегистрированных договоров.</td>
+                  <td colSpan={8} className='text-center py-3 text-gray-500'>У вас нет зарегистрированных договоров.</td>
                 </tr>
               )}
             </tbody>
