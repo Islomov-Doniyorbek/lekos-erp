@@ -579,7 +579,7 @@ const Purchase = () => {
                   <input 
                     className="border rounded-sm text-left my-1.5 px-3 py-1.5 bg-amber-50 w-full"
                     list="suppliers" 
-                    placeholder="Yetkazib beruvchi"
+                    placeholder="Имя поставщикa"
                     name="supplier"
                     onChange={(e) => {
                       validationSupplier(e.target.value);
@@ -599,7 +599,7 @@ const Purchase = () => {
                     onChange={handleChange}
                     className={`${!valSupplier ? "bg-gray-400" : "bg-amber-50"} border rounded-sm text-left px-3 py-1.5 w-full`} 
                     name="stir" 
-                    placeholder='STIR'  
+                    placeholder='ННН'  
                     type="text" 
                   />   
                 </td>
@@ -619,7 +619,7 @@ const Purchase = () => {
                     className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
                     type="text"  
                     name='raqam' 
-                    placeholder='hujjat raqami' 
+                    placeholder='Номер документa' 
                   />
                 </td>
                 <td className='py-1.5'>
@@ -629,7 +629,7 @@ const Purchase = () => {
                     className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
                     type="text" 
                     name='izoh' 
-                    placeholder='izoh' 
+                    placeholder='...' 
                   />
                 </td>
                 <td className='text-left px-3 py-3'></td>

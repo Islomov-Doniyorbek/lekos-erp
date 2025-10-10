@@ -335,11 +335,13 @@ const Products = () => {
         const contractProductRequest: ContractProductRequest = {
           user_id: 1,
           product_data: {
+
             name: form.product,
             sku: form.sku || `SKU-${Date.now()}`,
             price: form.price
           },
           stock_move_data: {
+            product_id: 0,
             document_id: currentDocumentId,
             movement_type: faktura[rowId]?.invoice.move_type || "in",
             date: form.date || new Date().toISOString().split('T')[0],
@@ -811,7 +813,7 @@ const Products = () => {
                 );
               })) : (
                 <tr>
-                  <td colSpan={6} className='text-center py-3'>У вас нет зарегистрированных счетов-фактур.</td>
+                  <td colSpan={6} className='text-center py-3 text-gray-500'>У вас нет зарегистрированных счетов-фактур.</td>
                 </tr>
               )}
             </tbody>

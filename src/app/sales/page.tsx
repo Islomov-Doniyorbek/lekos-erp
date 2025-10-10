@@ -62,7 +62,7 @@ const Sales = () => {
   const [editRowId, setEditRowId] = useState(0)
   const [editInRowId, setEditInRowId] = useState(0)
   const [innerTableId, setInnerTableId] = useState<null | number>(null)
-  
+  const nowDate = new Date()
   const [form, setForm] = useState<salesForm>({
     id: 0,
     customer: "",
@@ -77,7 +77,7 @@ const Sales = () => {
   const [inForm, setInForm] = useState({
     id: 0,
     move_type: "out" as "in" | "out",
-    date: "",
+    date: nowDate.toISOString().split('T')[0],
     doc_num: "",
     amount: "",
     comment: ""
@@ -395,7 +395,7 @@ const Sales = () => {
           date: inForm.date,
           doc_num: inForm.doc_num,
           amount: parseFloat(inForm.amount),
-          comment: inForm.comment || "---"
+          comment: inForm.comment || "..."
         }
       );
 
@@ -408,7 +408,7 @@ const Sales = () => {
         date: inForm.date,
         doc_num: inForm.doc_num,
         amount: parseFloat(inForm.amount),
-        comment: inForm.comment || "---"
+        comment: inForm.comment || "..."
       };
 
       setInRows(prev => [...prev, newDocument]);
@@ -554,7 +554,7 @@ const Sales = () => {
                   <input 
                     className="border rounded-sm text-left my-1.5 px-3 py-1.5 bg-amber-50 w-full"
                     list="cst" 
-                    placeholder="Buyurtmachi"
+                    placeholder="Имя клиента"
                     name="customer"
                     onChange={(e) => {
                       validationCustomer(e.target.value);
@@ -574,7 +574,7 @@ const Sales = () => {
                     onChange={handleChange}
                     className={`${!valCustomer ? "bg-gray-400" : "bg-amber-50"} border rounded-sm text-left px-3 py-1.5 w-full`} 
                     name="stir" 
-                    placeholder='STIR'  
+                    placeholder='ИНН'  
                     type="text" 
                   />   
                 </td>
@@ -594,7 +594,7 @@ const Sales = () => {
                     className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
                     type="text"  
                     name='raqam' 
-                    placeholder='hujjat raqami' 
+                    placeholder='Номер договора' 
                   />
                 </td>
                 <td className='py-1.5'>
@@ -604,7 +604,7 @@ const Sales = () => {
                     className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
                     type="text" 
                     name='izoh' 
-                    placeholder='izoh' 
+                    placeholder='...' 
                   />
                 </td>
                 <td className='text-left px-3 py-3'></td>
@@ -766,7 +766,7 @@ const Sales = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="text" 
                                 name='doc_num' 
-                                placeholder='Hujjat raqami'
+                                placeholder='Номер документa'
                               />
                             </td>
                             <td>
@@ -776,7 +776,7 @@ const Sales = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="number" 
                                 name='amount' 
-                                placeholder='0.00 uzs' 
+                                placeholder='0.00 сум' 
                               />
                             </td>
                             <td>
@@ -786,7 +786,7 @@ const Sales = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="text" 
                                 name='comment' 
-                                placeholder='izoh' 
+                                placeholder='...' 
                               />
                             </td>
                             <td className='text-left px-3 py-3'></td>
@@ -857,7 +857,7 @@ const Sales = () => {
                                     className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                     type="text" 
                                     name='doc_num' 
-                                    placeholder='Hujjat raqami'
+                                    placeholder='Номер документ'
                                   />
                                 </td>
                                 <td>
@@ -867,7 +867,7 @@ const Sales = () => {
                                     className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                     type="number" 
                                     name='amount' 
-                                    placeholder='0.00 uzs' 
+                                    placeholder='0.00 сум' 
                                   />
                                 </td>
                                 <td>
@@ -877,7 +877,7 @@ const Sales = () => {
                                     className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                     type="text" 
                                     name='comment' 
-                                    placeholder='izoh' 
+                                    placeholder='...' 
                                   />
                                 </td>
                                 <td className='text-left px-3 py-3'></td>
