@@ -7,6 +7,7 @@ import { MdAddToQueue, MdCheck, MdClose, MdEdit } from 'react-icons/md';
 import { FaCircle } from 'react-icons/fa6';
 import { useM } from '../context';
 import api from '../auth';
+import { useCounterparties } from '../api/useRequest';
 
 /** ====== Types ====== */
 type AgentType = 'customer' | 'supplier';
@@ -44,25 +45,41 @@ const Page: React.FC = () => {
   
   const { bg2, txt, mainBg } = useM();
 
-  /** ---- Data Fetching ---- */
-  const getData = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(
-        "https://fast-simple-crm.onrender.com/api/v1/counterparties/with-balance?type=customer"
-      ); 
-      setRows(res.data);
-    } catch (error) {
-      console.error("Xatolik:", error);
-      alert("Ma'lumotlarni yuklashda xatolik yuz berdi");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {data, isLoading, error} = useCounterparties("customer") 
+  
 
-  useEffect(() => {
-    getData();
-  }, []);
+
+  // const getData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const res = await api.get(
+  //       "https://fast-simple-crm.onrender.com/api/v1/counterparties/with-balance?type=customer"
+  //     ); 
+  //     setRows(res.data);
+  //   } catch (error) {
+  //     console.error("Xatolik:", error);
+  //     alert("Ma'lumotlarni yuklashda xatolik yuz berdi");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+ useEffect(() => {
+  // console.log('Loading:', isLoading)
+  // console.log('Data:', data)
+  // console.log('Error:', error)
+
+  if (isLoading) {
+    console.log('Maʼlumot yuklanmoqda...')
+  } else if (error) {
+    console.log('Xatolik:', error.message)
+  } else if (data) {
+    console.log('Maʼlumot olindi:', data)
+    
+    setRows(data)
+  }
+}, [isLoading, data, error])
+
 
   /** ---- Delete Handler ---- */
   const deleteCounterParty = async (id: number) => {
@@ -232,9 +249,9 @@ Status: ${row.status?.status || 0}
             </thead>
 
             <tbody className={`divide-y divide-gray-200 ${txt}`}>
-              {loading ? (
+              {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="py-6 text-center text-gray-500">
+                  <td colSpan={8} className="py-3 text-center text-gray-500">
                     Загрузка...
                   </td>
                 </tr>

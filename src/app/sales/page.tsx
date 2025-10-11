@@ -7,6 +7,7 @@ import type { components, paths } from "../../../types";
 import api from '../auth'
 import { useM } from '../context'
 import { formatAmount, formatDate } from '../formatter'
+import { info } from 'console'
 
 interface Mijoz {
   id: number;
@@ -28,7 +29,7 @@ interface deals {
   id: number;
   name: string;
   tin: string;
-  doc_num: string;
+  doc_num: string | null;
   comment: string;
   date: string;
   total?: number;
@@ -42,7 +43,7 @@ interface Document {
   type: "invoice" | "payment";
   move_type: "in" | "out";
   date: string;
-  doc_num: string;
+  doc_num: string | null;
   amount: number;
   comment: string;
 }
@@ -203,8 +204,8 @@ const Sales = () => {
       const newRow: deals = {
         id: response.data.id,
         name: form.customer,
-        tin: form.stir || "J.SH.",
-        doc_num: form.raqam,
+        tin: form.stir || "Физ. лицо",
+        doc_num: form.raqam.length > 0 ? form.raqam : null,
         comment: form.izoh,
         date: form.sana,
         total: 0,
@@ -313,7 +314,7 @@ const Sales = () => {
       id: item.id,
       move_type: item.move_type,
       date: item.date,
-      doc_num: item.doc_num,
+      doc_num: item.doc_num.length > 0 ? item.doc_num : null,
       amount: item.amount.toString(),
       comment: item.comment
     });
@@ -323,7 +324,7 @@ const Sales = () => {
 
   const handleInSave = async () => {
     try {
-      if (!editInForm.date || !editInForm.doc_num || !editInForm.amount) {
+      if (!editInForm.date || !editInForm.amount) {
         alert("Iltimos, majburiy maydonlarni to'ldiring!");
         return;
       }
@@ -337,9 +338,9 @@ const Sales = () => {
           type: type,
           move_type: editInForm.move_type,
           date: editInForm.date,
-          doc_num: editInForm.doc_num,
+          doc_num: editInForm.doc_num.length > 0 ? editInForm.doc_num : null,
           amount: parseFloat(editInForm.amount),
-          comment: editInForm.comment || "---"
+          comment: editInForm.comment || "..."
         }
       );
 
@@ -351,7 +352,7 @@ const Sales = () => {
                 type: type,
                 move_type: editInForm.move_type,
                 date: editInForm.date,
-                doc_num: editInForm.doc_num,
+                doc_num: editInForm.doc_num.length > 0 ? editInForm.doc_num : null,
                 amount: parseFloat(editInForm.amount),
                 comment: editInForm.comment
               }
@@ -393,7 +394,7 @@ const Sales = () => {
           type: type,
           move_type: inForm.move_type,
           date: inForm.date,
-          doc_num: inForm.doc_num,
+          doc_num: inForm.doc_num.length > 0 ? inForm.doc_num : null,
           amount: parseFloat(inForm.amount),
           comment: inForm.comment || "..."
         }
@@ -406,7 +407,7 @@ const Sales = () => {
         type: type,
         move_type: inForm.move_type,
         date: inForm.date,
-        doc_num: inForm.doc_num,
+        doc_num: inForm.doc_num.length > 0 ? inForm.doc_num : null,
         amount: parseFloat(inForm.amount),
         comment: inForm.comment || "..."
       };
@@ -688,7 +689,7 @@ const Sales = () => {
                         className='rounded-sm text-left px-3 py-1.5 w-full bg-[aqua]' 
                         type="text" 
                         name='raqam' 
-                        placeholder='hujjat raqami' 
+                        placeholder='Номер договора' 
                       />
                     </td>
                     <td className='p-1.5'>
@@ -698,7 +699,7 @@ const Sales = () => {
                         className='rounded-sm text-left px-3 py-1.5 w-full bg-[aqua]' 
                         type="text" 
                         name='izoh' 
-                        placeholder='izoh' 
+                        placeholder='...' 
                       />
                     </td>
                     <td className='text-left px-3 py-3'></td>

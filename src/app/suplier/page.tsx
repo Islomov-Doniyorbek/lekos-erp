@@ -7,6 +7,7 @@ import { MdAddToQueue, MdClose, MdEdit } from 'react-icons/md';
 import { FaCircle } from 'react-icons/fa6';
 import { useM } from '../context';
 import api from '../auth';
+import { useCounterparties } from '../api/useRequest';
 
 /** ====== Types ====== */
 type AgentType = 'customer' | 'supplier';
@@ -44,25 +45,18 @@ const Page: React.FC = () => {
   
   const { bg2, txt, mainBg } = useM();
 
-  /** ---- Data Fetching ---- */
-  const getData = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(
-        "https://fast-simple-crm.onrender.com/api/v1/counterparties/with-balance?type=supplier"
-      ); 
-      setRows(res.data);
-    } catch (error) {
-      console.error("Xatolik:", error);
-      alert("Ma'lumotlarni yuklashda xatolik yuz berdi");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {data, isLoading, error} = useCounterparties("supplier");
 
   useEffect(() => {
-    getData();
-  }, []);
+    if(isLoading){
+      console.log("Yuklanmoqda...");
+    }else if(error){
+      console.log(error);
+    }else if(data){
+      console.log(data);
+      setRows(data)
+    }
+  }, [data, isLoading, error]);
 
   /** ---- Delete Handler ---- */
   const deleteCounterParty = async (id: number) => {

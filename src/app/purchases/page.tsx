@@ -711,7 +711,7 @@ const Purchase = () => {
                         className='text-left px-3 py-1.5 bg-[#c1f0f8] w-full' 
                         type="text" 
                         name='raqam' 
-                        placeholder='hujjat raqami' 
+                        placeholder='Номер договора' 
                       />
                     </td>
                     <td className='p-1.5'>
@@ -721,7 +721,7 @@ const Purchase = () => {
                         className='text-left px-3 py-1.5 bg-[#c1f0f8] w-full' 
                         type="text" 
                         name='izoh' 
-                        placeholder='izoh' 
+                        placeholder='...' 
                       />
                     </td>
                     <td className='text-left px-3 py-3'></td>
@@ -794,7 +794,7 @@ const Purchase = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="text" 
                                 name='doc_num' 
-                                placeholder='Hujjat raqami'
+                                placeholder='Номер договора'
                               />
                             </td>
                             <td>
@@ -804,7 +804,7 @@ const Purchase = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="number" 
                                 name='amount' 
-                                placeholder='0.00 uzs' 
+                                placeholder='0.00 сум' 
                               />
                             </td>
                             <td>
@@ -814,7 +814,7 @@ const Purchase = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="text" 
                                 name='comment' 
-                                placeholder='izoh' 
+                                placeholder='...' 
                               />
                             </td>
                             <td className='text-left px-3 py-3'></td>
@@ -890,7 +890,7 @@ const Purchase = () => {
                                     className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                     type="text" 
                                     name='doc_num' 
-                                    placeholder='Hujjat raqami'
+                                    placeholder='Номер договора'
                                   />
                                 </td>
                                 <td>
@@ -900,7 +900,7 @@ const Purchase = () => {
                                     className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                     type="number" 
                                     name='amount' 
-                                    placeholder='0.00 uzs' 
+                                    placeholder='0.00 сум' 
                                   />
                                 </td>
                                 <td>
@@ -910,7 +910,7 @@ const Purchase = () => {
                                     className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                     type="text" 
                                     name='comment' 
-                                    placeholder='izoh' 
+                                    placeholder='...' 
                                   />
                                 </td>
                                 <td className='text-left px-3 py-3'></td>

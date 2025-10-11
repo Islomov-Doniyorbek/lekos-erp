@@ -124,7 +124,7 @@ const Products = () => {
       }
     }
     getDocs()
-  }, [])
+  }, [products, faktura])
 
   // Faktura ma'lumotlarini yangilash
   const refreshFakturaData = async () => {
@@ -429,8 +429,8 @@ const Products = () => {
         })
         setIsNewProduct(false)
         
-        alert("Mahsulot muvaffaqiyatli qo'shildi!");
       }
+      alert("Mahsulot muvaffaqiyatli qo'shildi!");
       setIsLot(false)
 
     } catch (error: any) {
@@ -664,7 +664,7 @@ const Products = () => {
                             {loadingStockMoves && (
                               <tr>
                                 <td colSpan={8} className="text-center px-3 py-3">
-                                  Yuklanmoqda...
+                                  Загрузка...
                                 </td>
                               </tr>
                             )}
