@@ -26,7 +26,7 @@ export default function Home() {
     // window.lo
     return (
       <div className=" w-full min-h-screen flex flex-col items-center justify-center">
-        <div className="loading w-20 h-20 rounded-full border-4 border-dotted border-green-950"></div>
+        <div className="loading w-10 h-10 rounded-full border-4 border-dotted border-green-950"></div>
         <p className="text-2xl">Загрузка...</p>
       </div>
     )

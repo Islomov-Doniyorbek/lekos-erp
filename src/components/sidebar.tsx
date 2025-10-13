@@ -23,13 +23,13 @@ const SideBar = () => {
     const {toggleMenu, isOpen, bg2, txt, fakturaCount, setFakturaCountQuant} = useM()
 
     const sideIcons:sidebarProps[] = [
-        {
-            id:0,
-            ico: <Image width={40} height={40} className='rounded-full' src={Logo} alt={"Logo"}/>,
-            title: "Главный",
-            path: "/dashboard",
-            count: null
-        },
+        // {
+        //     id:0,
+        //     ico: <Image width={40} height={40} className='rounded-full' src={Logo} alt={"Logo"}/>,
+        //     title: "Главный",
+        //     path: "/dashboard",
+        //     count: null
+        // },
         {
             id:4,
             ico: <MdPointOfSale/>,

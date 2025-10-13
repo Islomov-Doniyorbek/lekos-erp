@@ -124,7 +124,7 @@ const Products = () => {
       }
     }
     getDocs()
-  }, [products, faktura])
+  }, [])
 
   // Faktura ma'lumotlarini yangilash
   const refreshFakturaData = async () => {

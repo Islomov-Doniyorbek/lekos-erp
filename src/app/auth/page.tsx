@@ -27,7 +27,7 @@ const Auth: React.FC = () => {
     setIsSuccess(true)
     
     setTimeout(() => {
-      router.push("/dashboard");
+      router.push("/sales");
     }, 1000);
   } catch (err: unknown) {
     if (err instanceof Error) {
