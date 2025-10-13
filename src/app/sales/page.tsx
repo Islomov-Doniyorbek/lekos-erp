@@ -8,6 +8,8 @@ import api from '../auth'
 import { useM } from '../context'
 import { formatAmount, formatDate } from '../formatter'
 import { info } from 'console'
+import { useContracts, useCounterparties2 } from '../api/useRequest'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface Mijoz {
   id: number;
@@ -103,39 +105,46 @@ const Sales = () => {
     comment: ""
   })
 
-  
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const [res1, res2] = await Promise.all([
-          api.get("https://fast-simple-crm.onrender.com/api/v1/counterparties?type=customer"),
-          api.get("https://fast-simple-crm.onrender.com/api/v1/contracts/with-total?type=sales")
-        ]);
+  const {data: dataCP, isLoading: isLoadingCP, error: errorCP} = useCounterparties2("customer")
+  const {data: dataC, isLoading: isLoadingC, error: errorC} = useContracts("sales")
+  const queryClient = useQueryClient()
+   useEffect(() => {
+  if (isLoadingCP) {
+    console.log('Maʼlumot yuklanmoqda...')
+    return
+  }
 
-        setMijozlar(res1.data);
-        
-        
-        const merged = res1.data.flatMap((customer: Mijoz) => {
-          const contracts = res2.data.filter((contract: any) => contract.agent_id === customer.id);
-          if (contracts.length > 0) {
-            return contracts.map((contract: any) => ({
-              ...customer,
-              ...contract,
-              has_contract: true // Shartnoma borligini bildiradi
-            }));
-          }
-          
-          return [];
-        });
+  if (errorCP) {
+    console.log('Xatolik:', errorCP.message)
+    return
+  }
 
-        setRows(merged);
-      } catch (error) {
-        console.log("Ma'lumotlarni yuklashda xatolik:", error);
-      }
-    };
+  if (!dataCP || !dataC) return
 
-    getData();
-  }, [rows, inRows]);
+  console.log('Maʼlumot olindi:', dataCP)
+
+  // Mijozlarni set qilish
+  setMijozlar(dataCP)
+
+  // Mijozlar va shartnomalarni birlashtirish
+  const merged = dataCP.flatMap((customer: Mijoz) => {
+    const contracts = dataC.filter(
+      (contract: any) => contract.agent_id === customer.id
+    )
+
+    if (contracts.length > 0) {
+      return contracts.map((contract: any) => ({
+        ...customer,
+        ...contract,
+        has_contract: true, // Shartnoma bor
+      }))
+    }
+
+    return []
+  })
+
+  setRows(merged)
+}, [dataCP, dataC, isLoadingCP, errorCP, errorC])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -213,6 +222,35 @@ const Sales = () => {
       };
 
       setRows(prev => [...prev, newRow]);
+      const newSales = {
+
+      }
+      queryClient.setQueryData(['contractsWithTotal', 'sales'], (oldData: any) => {
+        if (!oldData) return [{
+          type: "sales",
+              date: form.sana,
+              doc_num: form.raqam,
+              comment: form.izoh
+        }];
+        return [...oldData, {
+          type: "sales",
+              date: form.sana,
+              doc_num: form.raqam,
+              comment: form.izoh
+        }];
+      })
+      queryClient.setQueryData(['counterparties2', 'customer'], (oldData: any) => {
+        if (!oldData) return [{
+              type: "customer",
+              name: form.customer,
+              tin: form.stir || null
+            }];
+        return [...oldData, {
+              type: "customer",
+              name: form.customer,
+              tin: form.stir || null
+            }];
+      })
       
       // Formani tozalash
       setForm({
@@ -266,7 +304,7 @@ const Sales = () => {
 
   const handleSave = async () => {
     try {
-      await api.patch(
+      const {data: updated} = await api.patch(
         `https://fast-simple-crm.onrender.com/api/v1/contracts/${editForm.id}`,
         {
           date: editForm.sana,
@@ -274,6 +312,21 @@ const Sales = () => {
           comment: editForm.izoh
         }
       );
+      queryClient.setQueryData(['contractsWithTotal', 'sales'], (old: any) => {
+  if (!old) return [updated];
+
+  return old.map(item =>
+    item.id === editForm.id
+      ? {
+          ...item, // eski maydonlarni saqlab qoladi
+          date: editForm.sana,
+          doc_num: editForm.raqam,
+          comment: editForm.izoh
+        }
+      : item
+  );
+});
+
 
       setRows(prev =>
         prev.map(row =>
@@ -488,8 +541,18 @@ const Sales = () => {
     }
 
     try {
-      await api.delete(`https://fast-simple-crm.onrender.com/api/v1/contracts/${id}`);
+      const {data: deleted} = await api.delete(`https://fast-simple-crm.onrender.com/api/v1/contracts/${id}`);
       
+
+
+
+      queryClient.setQueryData(['contractsWithTotal', 'sales'], (old:any) =>
+      {
+        if(!old) return [deleted];
+        return old.filter(item => item.id !== id)
+      }
+      );
+
       // YANGI: Faqat shartnoma o'chiriladi, mijoz emas
       setRows(prev => prev.filter(row => row.id !== id));
       

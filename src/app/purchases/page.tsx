@@ -10,6 +10,8 @@ import { formatAmount, formatDate } from '../formatter'
 import { TbArrowDownLeft } from 'react-icons/tb'
 import { Span } from 'next/dist/trace'
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query'
+import { useContracts, useCounterparties2 } from '../api/useRequest'
 
 interface Supplier {
   id: number;
@@ -50,7 +52,7 @@ interface Document {
   comment: string;
 }
 
-const Purchase = () => {
+const Purchase = () => { 
   const [rows, setRows] = useState<PurchaseDeal[]>([])
   const [inRows, setInRows] = useState<Document[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
@@ -107,38 +109,47 @@ const Purchase = () => {
   })
 
   // Asosiy ma'lumotlarni olish
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const [res1, res2] = await Promise.all([
-          api.get("https://fast-simple-crm.onrender.com/api/v1/counterparties?type=supplier"),
-          api.get("https://fast-simple-crm.onrender.com/api/v1/contracts/with-total?type=purchase")
-        ]);
 
-        setSuppliers(res1.data);
-        // console.log(res1.data);
-        
-        
-        const merged = res1.data.flatMap((supplier: Supplier) => {
-          const contracts = res2.data.filter((contract: any) => contract.agent_id === supplier.id);
-          if (contracts.length > 0) {
-            return contracts.map((contract: any) => ({
-              ...supplier,
-              ...contract,
-              has_contract: true
-            }));
-          }
-          return [];
-        });
+  const {data: dataCP, isLoading: isLoadingCP, error: errorCP} = useCounterparties2("supplier")
+  const {data: dataC, isLoading: isLoadingC, error: errorC} = useContracts("purchase")
+  const queryClient = useQueryClient()
+useEffect(() => {
+  if (isLoadingCP) {
+    console.log('Maʼlumot yuklanmoqda...')
+    return
+  }
 
-        setRows(merged);
-      } catch (error) {
-        console.log("Ma'lumotlarni yuklashda xatolik:", error);
-      }
-    };
+  if (errorCP) {
+    console.log('Xatolik:', errorCP.message)
+    return
+  }
 
-    getData();
-  }, [rows, inRows]);
+  if (!dataCP || !dataC) return
+
+  console.log('Maʼlumot olindi:', dataCP)
+
+  // Mijozlarni set qilish
+  setSuppliers(dataCP)
+
+  // Mijozlar va shartnomalarni birlashtirish
+  const merged = dataCP.flatMap((supplier: Supplier) => {
+    const contracts = dataC.filter(
+      (contract: any) => contract.agent_id === supplier.id
+    )
+
+    if (contracts.length > 0) {
+      return contracts.map((contract: any) => ({
+        ...supplier,
+        ...contract,
+        has_contract: true, // Shartnoma bor
+      }))
+    }
+
+    return []
+  })
+
+  setRows(merged)
+}, [dataCP, dataC, isLoadingCP, errorCP, errorC])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -220,7 +231,32 @@ const Purchase = () => {
       };
       
       setRows(prev => [...prev, newRow]);
-      
+      queryClient.setQueryData(['contractsWithTotal', 'purchase'], (oldData: any) => {
+        if (!oldData) return [{
+          type: "sales",
+              date: form.sana,
+              doc_num: form.raqam,
+              comment: form.izoh
+        }];
+        return [...oldData, {
+          type: "sales",
+              date: form.sana,
+              doc_num: form.raqam,
+              comment: form.izoh
+        }];
+      })
+      queryClient.setQueryData(['counterparties2', 'supplier'], (oldData: any) => {
+        if (!oldData) return [{
+              type: "customer",
+              name: form.supplier,
+              tin: form.stir || null
+            }];
+        return [...oldData, {
+              type: "customer",
+              name: form.supplier,
+              tin: form.stir || null
+            }];
+      })
       setForm({
         id: 0,
         supplier: "",
@@ -283,7 +319,7 @@ const Purchase = () => {
 
   const handleSave = async () => {
     try {
-      await api.patch(
+      const {data:updated} = await api.patch(
         `https://fast-simple-crm.onrender.com/api/v1/contracts/${editForm.id}`,
         {
           date: editForm.sana,
@@ -291,6 +327,21 @@ const Purchase = () => {
           comment: editForm.izoh
         }
       );
+      queryClient.setQueryData(['contractsWithTotal', 'purchase'], (old: any) => {
+        if (!old) return [updated];
+
+        return old.map(item =>
+          item.id === editForm.id
+            ? {
+                ...item, // eski maydonlarni saqlab qoladi
+                date: editForm.sana,
+                doc_num: editForm.raqam,
+                comment: editForm.izoh
+              }
+            : item
+        );
+      });
+
 
       setRows(prev =>
         prev.map(row =>
@@ -304,6 +355,7 @@ const Purchase = () => {
             : row
         )
       );
+      
       setIsEditRow(false);
       setIsEditRowStatus(true);
       
@@ -507,7 +559,13 @@ const Purchase = () => {
     }
 
     try {
-      await api.delete(`https://fast-simple-crm.onrender.com/api/v1/contracts/${id}`);
+      const {data:deleted} = await api.delete(`https://fast-simple-crm.onrender.com/api/v1/contracts/${id}`);
+      queryClient.setQueryData(['contractsWithTotal', 'sales'], (old:any) =>
+      {
+        if(!old) return [deleted];
+        return old.filter(item => item.id !== id)
+      }
+      );
       setRows(prev => prev.filter(row => row.id !== id));
       alert("Shartnoma muvaffaqiyatli o'chirildi!");
     } catch (error) {
