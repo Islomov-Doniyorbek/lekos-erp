@@ -24,7 +24,7 @@ type MenuContextType = {
   bg2: string,
   mainBg: string,
   txt: string,
-  getTheme: (bg:string, txt:string, bg2:string, mainBg:string) => void
+  getTheme: (bg:string, txt:string, bg2:string) => void
 }
 
 export const Mcontext = createContext<MenuContextType | undefined>(undefined)
@@ -46,13 +46,20 @@ const MProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     password: string,
     name: string,
     username: string,
-    stir: string,
-    phone: string
+    stir: string | null,
+    phone: string | null
   ): Promise<void> {
+
+    const reg = {
+      email: email,
+      password: password,
+      username: username,
+      name: name,
+      phone: phone ? phone : null,
+      tin: stir ? stir : null
+    }
     try {
-      const res = await axios.post('https://fast-simple-crm.onrender.com/api/v1/auth/register', {
-        email, password, name, username, stir, phone
-      })
+      const res = await axios.post('https://fast-simple-crm.onrender.com/api/v1/auth/register', reg)
       console.log('✅ Ro‘yxatdan o‘tdi:', res.data)
       return res.data
     } catch (error) {
@@ -111,7 +118,7 @@ const MProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mainBg, setMainBg] = useState('bg-white')
   const [txt, setTxt] = useState('text-blue-100')
 
-  const getTheme = (bg:string, txt:string, bg2:string, mainBg:string) => {
+  const getTheme = (bg:string, txt:string, bg2:string) => {
     setBg(bg)
     setBg2(bg2)
     setMainBg(mainBg)

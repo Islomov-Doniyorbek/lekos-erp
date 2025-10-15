@@ -47,8 +47,8 @@ const handleRegister = async (e: React.FormEvent) => {
     console.log("User info:", userData)
     alert("Success")
     setIsForm(false)
-    router.push("/auth");
-    setIsForm(true)
+    router.refresh();
+    // setIsForm(true)
   } catch (err) {
     alert(err || "Xatolik yuz berdi")
     console.log(err)

@@ -67,6 +67,7 @@ const Purchase = () => {
   const [editRowId, setEditRowId] = useState(0)
   const [editInRowId, setEditInRowId] = useState(0)
   const [innerTableId, setInnerTableId] = useState<null | number>(null)
+    const [dogDate, setDogDate] = useState("")
   const router = useRouter()
   
   const [form, setForm] = useState<PurchaseForm>({
@@ -266,7 +267,7 @@ useEffect(() => {
         izoh: "",
         total: 0
       });
-      
+      window.location.reload()
       setIsInputRow(false);
       
     } catch (error) {
@@ -714,10 +715,10 @@ useEffect(() => {
                     </td>
                     <td className='text-left pl-6 pr-3 py-2'>
                       <b>{item.name}</b> <br />
-                      <small>{item.tin ? item.tin : "J.SH."}</small>
+                      <small>{item.tin ? item.tin : "Физ. лицо"}</small>
                     </td>
                     <td className='text-left px-3 py-2'>{formatDate(item.date)}</td>
-                    <td className='text-left px-3 py-2'>{item.doc_num}</td>
+                    <td className='text-left px-3 py-2'>{item.doc_num ? item.doc_num : "---"}</td>
                     <td className='text-left px-3 py-2'>{item.comment}</td>
                     <td className='text-left px-3 py-2'>
                       {item.total && item.total > 0 ? formatAmount(item.total) : 0}
@@ -727,12 +728,13 @@ useEffect(() => {
                     </td>
                     <td className='flex items-center justify-end gap-2 px-3 py-2'>
                       <button className='cursor-pointer flex items-center justify-center text-xl w-8 h-8 font-semibold'>
-                        {innerTableId === item.id ? (
-                          <FaArrowAltCircleUp className='text-red-700' onClick={() => toggleInnerTable(item.id)} />
-                        ) : (
-                          <FaArrowAltCircleDown className='text-teal-700' onClick={() => toggleInnerTable(item.id)} />
-                        )}
-                      </button>
+                                                    {innerTableId === item.id ? (
+                                                      <FaArrowAltCircleUp className='text-red-700' onClick={() => {toggleInnerTable(item.id);
+                                                      }} />
+                                                    ) : (
+                                                      <FaArrowAltCircleDown className='text-teal-700' onClick={() => {toggleInnerTable(item.id);  setDogDate(item.date); console.log(item.date);}} />
+                                                    )}
+                                                  </button>
                       <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-yellow-600'>
                         <MdEdit onClick={() => editRow(item)} />
                       </button>
@@ -843,6 +845,7 @@ useEffect(() => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="date" 
                                 name='date'  
+                                min={dogDate}
                               />
                             </td>
                             <td>

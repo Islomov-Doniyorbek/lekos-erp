@@ -52,6 +52,13 @@ const SideBar = () => {
             count: fakturaCount
         },
         {
+            id:23,
+            ico: <FaBox/>,
+            title: "Продукт",
+            path: "/products",
+            count: null
+        },
+        {
             id:1,
             ico: <FaUser/>,
             title: "Клиент",
@@ -65,13 +72,7 @@ const SideBar = () => {
             path: "/suplier",
             count: null
         },
-        {
-            id:23,
-            ico: <FaBox/>,
-            title: "Продукт",
-            path: "/products",
-            count: null
-        },
+        
     ]
     useEffect(()=>{
         const getFaktura = async ()=>{

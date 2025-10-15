@@ -32,7 +32,7 @@ api.interceptors.response.use(
 
       // Faqat client tarafda redirect qilamiz
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        window.location.href = "/auth";
       }
 
       return Promise.reject(error);

@@ -51,6 +51,14 @@ interface Document {
 }
 
 const Sales = () => {
+
+  const today = new Date();
+
+// Sana formatini yyyy-mm-dd shakliga keltirish
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const dd = String(today.getDate()).padStart(2, '0');
+const formattedToday = `${yyyy}-${mm}-${dd}`;
   const [rows, setRows] = useState<deals[]>([])
   const [inRows, setInRows] = useState<Document[]>([])
   const [mijozlar, setMijozlar] = useState<Mijoz[]>([])
@@ -65,6 +73,7 @@ const Sales = () => {
   const [editRowId, setEditRowId] = useState(0)
   const [editInRowId, setEditInRowId] = useState(0)
   const [innerTableId, setInnerTableId] = useState<null | number>(null)
+  const [dogDate, setDogDate] = useState("")
   const nowDate = new Date()
   const [form, setForm] = useState<salesForm>({
     id: 0,
@@ -262,7 +271,7 @@ const Sales = () => {
         izoh: "",
         total: 0
       });
-      
+      window.location.reload()
       setIsInputRow(false);
       
     } catch (error) {
@@ -648,7 +657,7 @@ const Sales = () => {
                     onChange={handleChange} 
                     className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full' 
                     type="date" 
-                    name='sana' 
+                    name='sana'
                   />
                 </td>
                 <td className='py-1.5'>
@@ -696,10 +705,10 @@ const Sales = () => {
                     </td>
                     <td className='text-left pl-6 pr-3 py-2'>
                       <b>{item.name}</b> <br />
-                      <small>{item.tin ? item.tin : "J.SH."}</small>
+                      <small>{item.tin ? item.tin : "Физ. лицо"}</small>
                     </td>
                     <td className='text-left px-3 py-2'>{formatDate(item.date)}</td>
-                    <td className='text-left px-3 py-2'>{item.doc_num}</td>
+                    <td className='text-left px-3 py-2'>{item.doc_num ? item.doc_num : "---"}</td>
                     <td className='text-left px-3 py-2'>{item.comment}</td>
                     <td className='text-left px-3 py-2'>
                       {item.total && item.total > 0 ? formatAmount(Number(item.total)) : 0}
@@ -710,9 +719,10 @@ const Sales = () => {
                     <td className='flex items-center justify-end gap-2 px-3 py-2'>
                       <button className='cursor-pointer flex items-center justify-center text-xl w-8 h-8 font-semibold'>
                               {innerTableId === item.id ? (
-                                <FaArrowAltCircleUp className='text-red-700' onClick={() => toggleInnerTable(item.id)} />
+                                <FaArrowAltCircleUp className='text-red-700' onClick={() => {toggleInnerTable(item.id);
+                                }} />
                               ) : (
-                                <FaArrowAltCircleDown className='text-teal-700' onClick={() => toggleInnerTable(item.id)} />
+                                <FaArrowAltCircleDown className='text-teal-700' onClick={() => {toggleInnerTable(item.id);  setDogDate(item.date); console.log(item.date);}} />
                               )}
                             </button>
                       <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-yellow-600'>
@@ -821,6 +831,7 @@ const Sales = () => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="date" 
                                 name='date'  
+                                min={dogDate}
                               />
                             </td>
                             <td>
