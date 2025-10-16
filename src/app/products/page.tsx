@@ -452,7 +452,7 @@ const [isInTable, setIsInTable] = useState(false)
                                                 <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
                                                   <tr>
                                                     <th className='text-left px-3 py-3'>#</th>
-                                                    <th className='text-left px-3 py-3'>&#8601;&#8599;</th>
+                                                    <th className='text-left px-3 py-3'>Движ.</th>
                                                     <th className='text-left px-3 py-3'>От кого/кому</th>
                                                     <th className='text-left px-3 py-3'>Дата</th>
                                                     <th className='text-left px-3 py-3'>Количество</th>

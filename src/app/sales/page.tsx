@@ -603,7 +603,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                 <th className='text-left px-3 py-3'>Клиент</th>
                 <th className='text-left px-3 py-3'>Дата</th>
                 <th className='text-left px-3 py-3'>Номер договора</th>
-                <th className='text-left px-3 py-3'>Описание</th>
+                {/* <th className='text-left px-3 py-3'>Описание</th> */}
                 <th className='text-left px-3 py-3'>Дебит</th>
                 <th className='text-left px-3 py-3'>Кредит</th>
                 <th className='px-3 py-3 flex gap-2 justify-end items-center'>
@@ -637,7 +637,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                   />
                   <datalist className='z-20 ' id="cst">
                     {mijozlar.map(item => (
-                      <option key={item.id} value={item.name}>{item.name}</option>
+                      <option key={item.id} value={item.name}>{item.tin ? `ИНН: ${item.tin}` : "Физ. лицо"}</option>
                     ))}
                   </datalist>
                   <br />
@@ -670,7 +670,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                     placeholder='Номер договора' 
                   />
                 </td>
-                <td className='py-1.5'>
+                {/* <td className='py-1.5'>
                   <input 
                     value={form.izoh} 
                     onChange={handleChange} 
@@ -679,7 +679,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                     name='izoh' 
                     placeholder='...' 
                   />
-                </td>
+                </td> */}
                 <td className='text-left px-3 py-3'></td>
                 <td className='text-left px-3 py-3'></td>
                 <td className='cursor-pointer flex items-center justify-end gap-2 text-2xl px-3 py-3'>
@@ -698,7 +698,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                 rows.map((item, i) => (
                 <React.Fragment key={item.id}>
                   {/* Ko'rinadigan qator */}
-                  <tr className={`${isEditRow && editRowId === item.id ? "hidden" : "table-row"} border-b border-gray-200 border-t hover:bg-emerald-100`}>
+                  <tr onClick={() => {toggleInnerTable(item.id);  setDogDate(item.date); console.log(item.date);}} className={`${isEditRow && editRowId === item.id ? "hidden" : "table-row"} border-b border-gray-200 border-t hover:bg-emerald-100`}>
                     <td className='text-left px-3 py-2 relative overflow-hidden'>
                       {i + 1}
                       <div className={`${isEditRowStatus && editRowId === item.id ? "block" : "hidden"} h-10 w-2 bg-yellow-500 absolute -top-2 left-2 rotate-45`}></div>
@@ -709,7 +709,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                     </td>
                     <td className='text-left px-3 py-2'>{formatDate(item.date)}</td>
                     <td className='text-left px-3 py-2'>{item.doc_num ? item.doc_num : "---"}</td>
-                    <td className='text-left px-3 py-2'>{item.comment}</td>
+                    {/* <td className='text-left px-3 py-2'>{item.comment}</td> */}
                     <td className='text-left px-3 py-2'>
                       {item.total && item.total > 0 ? formatAmount(Number(item.total)) : 0}
                     </td>
@@ -789,7 +789,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
 
 
                   <tr className={`${item.id === innerTableId ? "table-row" : "hidden"}`}>
-                    <td className='px-2 py-6 bg-[#f0ffff]' colSpan={8}>
+                    <td className='px-2 py-6 bg-[#f0ffff]' colSpan={7}>
                       <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl overflow-hidden">
                         <thead className={`${bg} text-white uppercase tracking-wide`}>
                           <tr>
@@ -797,7 +797,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                             <th className='text-left px-3 py-3'>Тип</th>
                             <th colSpan={2} className='text-left px-3 py-3'>Документ</th>
                             <th className='text-left px-3 py-3'>Сумма</th>
-                            <th className='text-left px-3 py-3'>Комметарий</th>
+                            {/* <th className='text-left px-3 py-3'>Комметарий</th> */}
                             <th className="px-3 py-3 text-left">Дебит</th>
                             <th className="px-3 py-3 text-left">Кредит</th>
                             <th className='px-3 py-3 flex gap-2 justify-end items-center'>
@@ -854,7 +854,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                                 placeholder='0.00 сум' 
                               />
                             </td>
-                            <td>
+                            {/* <td>
                               <input 
                                 value={inForm.comment} 
                                 onChange={handleInChange} 
@@ -863,7 +863,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                                 name='comment' 
                                 placeholder='...' 
                               />
-                            </td>
+                            </td> */}
                             <td className='text-left px-3 py-3'></td>
                             <td className='text-left px-3 py-3'></td>
                             <td className='cursor-pointer flex items-center justify-end gap-2 text-2xl px-3 py-3'>
@@ -889,7 +889,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                                   {doc.doc_num==null ? formatDate(doc.date) : `№${doc.doc_num} от ${formatDate(doc.date)}`}
                                 </td>
                                 <td className='text-left px-3 py-3'>{formatAmount(Number(doc.amount))}</td>
-                                <td className='text-left px-3 py-3'>{doc.comment}</td>
+                                {/* <td className='text-left px-3 py-3'>{doc.comment}</td> */}
                                 <td className='text-left px-3 py-3'>
                                   {doc.move_type === "out" ? formatAmount(Number(doc.amount)) : 0}
                                 </td>
@@ -945,7 +945,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                                     placeholder='0.00 сум' 
                                   />
                                 </td>
-                                <td>
+                                {/* <td>
                                   <input 
                                     value={editInForm.comment} 
                                     onChange={handleInEditChange} 
@@ -954,7 +954,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                                     name='comment' 
                                     placeholder='...' 
                                   />
-                                </td>
+                                </td> */}
                                 <td className='text-left px-3 py-3'></td>
                                 <td className='text-left px-3 py-3'></td>
                                 <td className='text-left cursor-pointer flex items-center gap-1.5 text-2xl px-3 py-3'>
@@ -971,7 +971,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
 
                           {/* Jami qator */}
                           <tr className='border-t-2 font-semibold'>
-                            <td colSpan={6} className='text-left px-3 py-3'></td>
+                            <td colSpan={5} className='text-left px-3 py-3'></td>
                             <td className='text-left px-3 py-3'>
                               Общий дебит: <br />
                               {formatAmount(Number(item.total_debit))}

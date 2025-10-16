@@ -38,10 +38,24 @@ const SideBar = () => {
             count: null
         },
         {
+            id:1,
+            ico: <FaUser/>,
+            title: "Клиент",
+            path: "/customer",
+            count: null
+        },
+        {
             id:5,
             ico: <GiBuyCard/>,
             title: "Покупки",
             path: "/purchases",
+            count: null
+        },
+        {
+            id:2,
+            ico: <FaShippingFast/>,
+            title: "Поставщик",
+            path: "/suplier",
             count: null
         },
         {
@@ -56,20 +70,6 @@ const SideBar = () => {
             ico: <FaBox/>,
             title: "Продукт",
             path: "/products",
-            count: null
-        },
-        {
-            id:1,
-            ico: <FaUser/>,
-            title: "Клиент",
-            path: "/customer",
-            count: null
-        },
-        {
-            id:2,
-            ico: <FaShippingFast/>,
-            title: "Поставщик",
-            path: "/suplier",
             count: null
         },
         

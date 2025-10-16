@@ -323,7 +323,7 @@ const Products = () => {
 
   const handleAddProduct = async () => {
     try {
-      if (!form.product || !form.quantity || !form.price) {
+      if (!form.product || !form.price) {
         alert("Mahsulot nomi, miqdor va narxini kiriting!")
         return
       }
@@ -414,22 +414,22 @@ const Products = () => {
         }
       }
 
-      if (success) {
-        // Faktura ma'lumotlarini yangilash
-        await refreshFakturaData();
+      // if (success) {
+      //   // Faktura ma'lumotlarini yangilash
+      //   await refreshFakturaData();
         
-        // Formni tozalash
-        setForm({
-          product: "",
-          sku: "",
-          price: 0,
-          quantity: 0,
-          date: new Date().toISOString().split('T')[0],
-          comment: ""
-        })
-        setIsNewProduct(false)
+      //   // Formni tozalash
+      //   setForm({
+      //     product: "",
+      //     sku: "",
+      //     price: 0,
+      //     quantity: 0,
+      //     date: new Date().toISOString().split('T')[0],
+      //     comment: ""
+      //   })
+      //   setIsNewProduct(false)
         
-      }
+      // }
       alert("Mahsulot muvaffaqiyatli qo'shildi!");
       setIsLot(false)
 
@@ -509,7 +509,7 @@ const Products = () => {
                 
                 return (
                   <React.Fragment key={id}>
-                    <tr className={`${faktura.length == id+1 ? "border-b-0" : "border-b border-gray-300"}`}>
+                    <tr onClick={() => handleExpandRow(id, fk)} className={`${faktura.length == id+1 ? "border-b-0" : "border-b border-gray-300"}`}>
                       <td className='text-left px-3 py-3'>{id + 1}</td>
                       <td className='text-left px-3 py-3'>{fk.invoice.move_type === "in" ? (
                       <span className="flex items-center gap-1">
