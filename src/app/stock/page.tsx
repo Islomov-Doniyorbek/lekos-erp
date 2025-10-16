@@ -335,7 +335,6 @@ const Products = () => {
         const contractProductRequest: ContractProductRequest = {
           user_id: 1,
           product_data: {
-
             name: form.product,
             sku: form.sku || `SKU-${Date.now()}`,
             price: form.price
@@ -414,30 +413,31 @@ const Products = () => {
         }
       }
 
-      // if (success) {
-      //   // Faktura ma'lumotlarini yangilash
-      //   await refreshFakturaData();
+      if (success) {
+        // Faktura ma'lumotlarini yangilash
+        await refreshFakturaData();
         
-      //   // Formni tozalash
-      //   setForm({
-      //     product: "",
-      //     sku: "",
-      //     price: 0,
-      //     quantity: 0,
-      //     date: new Date().toISOString().split('T')[0],
-      //     comment: ""
-      //   })
-      //   setIsNewProduct(false)
+        // Formni tozalash
+        setForm({
+          product: "",
+          sku: "",
+          price: 0,
+          quantity: 0,
+          date: new Date().toISOString().split('T')[0],
+          comment: ""
+        })
+        setIsNewProduct(false)
+        setIsLot(false)
         
-      // }
-      alert("Mahsulot muvaffaqiyatli qo'shildi!");
-      setIsLot(false)
+        // alert("Mahsulot muvaffaqiyatli qo'shildi!");
+      }
 
     } catch (error: any) {
       if(error.response?.data?.detail === "The amount received at the warehouse exceeds the amount indicated on the invoice."){
         setIsLot(true)
       }
       console.error("Mahsulot qo'shishda xatolik:", error)
+      // alert("Mahsulot qo'shishda xatolik yuz berdi!");
     }
   }
 
@@ -451,6 +451,7 @@ const Products = () => {
       comment: ""
     })
     setIsNewProduct(false)
+    setIsLot(false)
   }
 
   // Faktura ochilganda stock movelarni yuklash
@@ -461,11 +462,13 @@ const Products = () => {
       setIsOpen(false);
       setRowId(0);
       setEditingRows([]); // Edit rejimini tozalash
+      setIsLot(false);
     } else {
       setIsOpen(true);
       setRowId(id);
       setCurrentDocumentId(documentId);
       setEditingRows([]); // Edit rejimini tozalash
+      setIsLot(false);
       
       await fetchStockMovesByDocument(documentId);
     }
@@ -650,13 +653,22 @@ const Products = () => {
                                 />
                               </td>
                               <td className='cursor-pointer text-right  gap-2 text-2xl px-3 py-3'>
+                                <div className="flex gap-2 justify-end">
                                   <button 
-                                  onClick={handleAddProduct}
-                                  className='cursor-pointerw-8 h-8 text-xl text-green-600 hover:text-green-800'
-                                  title="Qo'shish"
-                                >
-                                  <FaPlusCircle />
-                                </button>
+                                    onClick={handleAddProduct}
+                                    className='cursor-pointer w-8 h-8 text-xl text-green-600 hover:text-green-800'
+                                    title="Qo'shish"
+                                  >
+                                    <FaPlusCircle />
+                                  </button>
+                                  <button 
+                                    onClick={handleCancel}
+                                    className='cursor-pointer w-8 h-8 text-xl text-red-600 hover:text-red-800'
+                                    title="Bekor qilish"
+                                  >
+                                    <MdClose />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                             

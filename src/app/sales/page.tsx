@@ -131,6 +131,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
   if (!dataCP || !dataC) return
 
   console.log('Maʼlumot olindi:', dataCP)
+  console.log('Maʼlumot olindi:', dataC)
 
   // Mijozlarni set qilish
   setMijozlar(dataCP)
@@ -185,7 +186,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
             agent_id: existingCustomer.id,
             type: "sales",
             date: form.sana,
-            doc_num: form.raqam,
+            doc_num: form.raqam ? form.raqam : null,
             comment: form.izoh
           }
         );

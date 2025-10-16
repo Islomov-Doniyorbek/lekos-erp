@@ -33,7 +33,7 @@ const SideBar = () => {
         {
             id:4,
             ico: <MdPointOfSale/>,
-            title: "Продажи",
+            title: "Продажи 6310",
             path: "/sales",
             count: null
         },
@@ -47,7 +47,7 @@ const SideBar = () => {
         {
             id:5,
             ico: <GiBuyCard/>,
-            title: "Покупки",
+            title: "Покупки 6010",
             path: "/purchases",
             count: null
         },
@@ -61,7 +61,7 @@ const SideBar = () => {
         {
             id:3,
             ico: <FaBoxArchive/>,
-            title: "Склад",
+            title: "Склад 2910",
             path: "/stock",
             count: fakturaCount
         },
