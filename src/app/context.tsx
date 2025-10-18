@@ -20,11 +20,9 @@ type MenuContextType = {
   login: (password: string, username: string) => Promise<void>
   header: string,
   fakturaCount: number,
-  bg: string,
-  bg2: string,
-  mainBg: string,
+  headerClr:string, sidebar:string, table:string, innerTable:string, activeRow: string, activeInRow: string, othClr: string, othClr2: string
   txt: string,
-  getTheme: (bg:string, txt:string, bg2:string) => void
+  getTheme: (headerClr:string, sidebar:string, table:string, innerTable:string, activeRow: string, activeInRow: string, othClr: string, othClr2: string) => void
 }
 
 export const Mcontext = createContext<MenuContextType | undefined>(undefined)
@@ -113,15 +111,27 @@ const MProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 
 
-  const [bg, setBg] = useState('bg-[#486c87]')
-  const [bg2, setBg2] = useState('bg-[#013d8c]')
-  const [mainBg, setMainBg] = useState('bg-white')
+  const [headerClr, setHeaderClr] = useState('bg-[#0f3a57]')
+  const [sidebar, setSidebar] = useState('bg-[#185d8b]')
+  const [table, setTable] = useState('bg-[#2280bf]')
+  const [innerTable, setInnerTable] = useState('bg-[#3498db]')
+  const [activeRow, setActiveRow] = useState('bg-[#63b0e3]')
+  const [activeInRow, setActiveInRow] = useState('bg-[#97caed]')
+  const [othClr, setOthClr] = useState('bg-[#cbe5f6]')
+  const [othClr2, setOthClr2] = useState('bg-[#eef6fc]')
   const [txt, setTxt] = useState('text-blue-100')
 
-  const getTheme = (bg:string, txt:string, bg2:string) => {
-    setBg(bg)
-    setBg2(bg2)
-    setMainBg(mainBg)
+  const getTheme = (headerClr:string, sidebar:string, table:string, innerTable:string, activeRow: string, activeInRow: string, othClr: string, othClr2: string) => {
+    setHeaderClr(headerClr)
+    setSidebar(sidebar)
+    setTable(table)
+    setInnerTable(innerTable)
+    setActiveRow(activeRow)
+    setActiveInRow(activeInRow)
+    setOthClr(othClr)
+    setOthClr2(othClr2)
+
+
     setTxt(txt)
   }
 
@@ -138,10 +148,15 @@ const MProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         fakturaCount,
         register,
         login,
-        bg,
-        bg2,
+        headerClr,
+        sidebar,
+        table,
+        innerTable,
+        activeRow,
+        activeInRow,
+        othClr,
+        othClr2,
         txt,
-        mainBg,
         getTheme
       }}
     >

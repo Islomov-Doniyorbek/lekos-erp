@@ -3,7 +3,7 @@ import { formatAmount, formatDate } from '../formatter'
 import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
 import { BiEdit } from 'react-icons/bi'
-import { FaArrowAltCircleDown, FaPlusCircle } from 'react-icons/fa'
+import { FaArrowAltCircleDown, FaPlusCircle, FaTrashAlt } from 'react-icons/fa'
 import { MdClose, MdCheck, MdCancel, MdEdit } from 'react-icons/md'
 import api from '../auth'
 import { useM } from '../context'
@@ -151,8 +151,10 @@ const Products = () => {
       
       console.log(`Document ${documentId} uchun stock movelar:`, filteredStockMoves);
       
+      // Yangilangan products ro'yxatidan foydalanish
+      const currentProducts = [...products];
       const stockMovesWithProductInfo = filteredStockMoves.map((move: any) => {
-        const product = products.find(p => p.id === move.product_id);
+        const product = currentProducts.find(p => p.id === move.product_id);
         return {
           id: move.id,
           product_id: move.product_id,
@@ -272,7 +274,7 @@ const Products = () => {
     try {
       await api.delete(`https://fast-simple-crm.onrender.com/api/v1/stock-moves/${id}`);
       
-      // Local state yangilash
+      // Local state yangilash - faqat o'chirilgan elementni olib tashlash
       setStockMove(prev => prev.filter(item => item.id !== id));
       
       // Faktura ma'lumotlarini yangilash
@@ -329,6 +331,7 @@ const Products = () => {
       }
 
       let success = false;
+      let newStockMove: StockMove | null = null;
 
       if (isNewProduct) {
         // Yangi mahsulot
@@ -356,12 +359,14 @@ const Products = () => {
         )
 
         // Local state yangilash
-        if (response.data.product) {
-          setProducts(prev => [...prev, response.data.product])
+        console.log(response.data);
+        
+        if (response.data) {
+          setProducts(prev => [...prev, response.data])
         }
         
         if (response.data.stock_move) {
-          const newStockMove: StockMove = {
+          newStockMove = {
             id: response.data.stock_move.id,
             product_id: response.data.stock_move.product_id,
             document_id: currentDocumentId,
@@ -372,7 +377,6 @@ const Products = () => {
             comment: form.comment,
             movement_type: faktura[rowId]?.invoice.move_type || "in"
           }
-          setStockMove(prev => [...prev, newStockMove])
           success = true;
         }
 
@@ -397,7 +401,7 @@ const Products = () => {
             stockMoveData
           )
           
-          const newStockMove: StockMove = {
+          newStockMove = {
             id: stockMoveResponse.data.id,
             product_id: existingProduct.id,
             document_id: currentDocumentId,
@@ -408,12 +412,18 @@ const Products = () => {
             comment: form.comment,
             movement_type: faktura[rowId]?.invoice.move_type || "in"
           }
-          setStockMove(prev => [...prev, newStockMove])
           success = true;
         }
       }
 
-      if (success) {
+      if (success && newStockMove) {
+        // StockMove state yangilash - ESKI usul o'rniga TO'G'RI usul
+        setStockMove(prev => {
+          // Yangi massiv yaratish va yangi elementni qo'shish
+          const updatedStockMoves = [...prev, newStockMove!];
+          return updatedStockMoves;
+        });
+        
         // Faktura ma'lumotlarini yangilash
         await refreshFakturaData();
         
@@ -429,6 +439,7 @@ const Products = () => {
         setIsNewProduct(false)
         setIsLot(false)
         
+        console.log("Yangi mahsulot qo'shildi:", newStockMove);
         // alert("Mahsulot muvaffaqiyatli qo'shildi!");
       }
 
@@ -437,7 +448,7 @@ const Products = () => {
         setIsLot(true)
       }
       console.error("Mahsulot qo'shishda xatolik:", error)
-      // alert("Mahsulot qo'shishda xatolik yuz berdi!");
+      alert("Mahsulot qo'shishda xatolik yuz berdi!");
     }
   }
 
@@ -485,7 +496,7 @@ const Products = () => {
     return moves.reduce((total, move) => total + (move.price * move.quantity), 0);
   }
   
-  const {bg,bg2, txt} = useM()
+  const {table, innerTable, txt} = useM()
   
   return (
     <CustomLayout>
@@ -493,7 +504,7 @@ const Products = () => {
         <div className="title mb-4 text-2xl font-semibold">Список счетов-фактур по договорам</div>
         <div className="overflow-x-auto border-[1px] border-gray-100 border-t-0 rounded-2xl">
           <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
-            <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
+            <thead className={`${table} ${txt} uppercase tracking-wide`}>
               <tr>
                 <th className='text-left px-3 py-3'>#</th>
                 <th className='text-left px-3 py-3'>Тип</th>
@@ -512,7 +523,7 @@ const Products = () => {
                 
                 return (
                   <React.Fragment key={id}>
-                    <tr onClick={() => handleExpandRow(id, fk)} className={`${faktura.length == id+1 ? "border-b-0" : "border-b border-gray-300"}`}>
+                    <tr onClick={() => handleExpandRow(id, fk)} className={`${faktura.length == id+1 ? "border-b-0" : "border-b border-gray-300"} hover:bg-[#cbe5f6]`}>
                       <td className='text-left px-3 py-3'>{id + 1}</td>
                       <td className='text-left px-3 py-3'>{fk.invoice.move_type === "in" ? (
                       <span className="flex items-center gap-1">
@@ -562,10 +573,10 @@ const Products = () => {
                         />
                       </td>
                     </tr>
-                    <tr className={`${isOpen && rowId === id ? "table-row" : "hidden"}`}>
+                    <tr className={`${isOpen && rowId === id ? "table-row" : "hidden"} `}>
                       <td colSpan={7} className='p-2'>
                         <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl">
-                          <thead className={`${bg} text-white uppercase tracking-wide`}>
+                          <thead className={`${innerTable} text-white uppercase tracking-wide`}>
                             <tr>
                               <th className='text-left px-3 py-3'>#</th>
                               <th className='text-left px-3 py-3'>Продукт</th>
@@ -686,7 +697,7 @@ const Products = () => {
                               const isEditing = isEditingRow(item.id);
                               
                               return (
-                                <tr key={item.id}>
+                                <tr key={item.id} className='hover:bg-[#cbe5f6]'>
                                   <td className='flex flex-col px-3 py-3'>
                                     <span>{index+1}</span>
                                   </td>
@@ -787,7 +798,7 @@ const Products = () => {
                                           className='text-xl text-red-600 hover:text-red-800'
                                           title="O'chirish"
                                         >
-                                          <MdClose />
+                                          <FaTrashAlt />
                                         </button>
                                       </div>
                                     )}

@@ -20,7 +20,7 @@ interface sidebarProps {
     count: number | null
 }
 const SideBar = () => {
-    const {toggleMenu, isOpen, bg2, txt, fakturaCount, setFakturaCountQuant} = useM()
+    const {toggleMenu, isOpen, sidebar, othClr2, txt, fakturaCount, setFakturaCountQuant} = useM()
 
     const sideIcons:sidebarProps[] = [
         // {
@@ -33,7 +33,7 @@ const SideBar = () => {
         {
             id:4,
             ico: <MdPointOfSale/>,
-            title: "Продажи 6310",
+            title: "Продажи",
             path: "/sales",
             count: null
         },
@@ -47,7 +47,7 @@ const SideBar = () => {
         {
             id:5,
             ico: <GiBuyCard/>,
-            title: "Покупки 6010",
+            title: "Покупки",
             path: "/purchases",
             count: null
         },
@@ -61,7 +61,7 @@ const SideBar = () => {
         {
             id:3,
             ico: <FaBoxArchive/>,
-            title: "Склад 2910",
+            title: "Склад",
             path: "/stock",
             count: fakturaCount
         },
@@ -100,7 +100,7 @@ const SideBar = () => {
     const pathName = usePathname()
 // bg-[#013d8c]
   return (
-    <div className={`z-40 overflow-y-auto absolute ${isOpen ? "left-0" : "-left-40"} -left-40 lg:relative lg:left-0 flex flex-col  items-center w-28 h-full py-3.5 ${bg2}`}>
+    <div className={`z-40 overflow-y-auto absolute ${isOpen ? "left-0" : "-left-40"} -left-40 lg:relative lg:left-0 flex flex-col  items-center w-28 h-full py-3.5 ${sidebar}`}>
         {/* <p>{fakturaCount}</p> */}
         {
             sideIcons.map(item=>{
@@ -108,12 +108,12 @@ const SideBar = () => {
                     <Link onClick={()=>{
                         toggleMenu();
                     }} 
-                    className={`${bg2} ${pathName == item.path ? "bg-white text-[#0053d9]" : `${txt}`} py-2 lg:py-4 w-full 
+                    className={`${sidebar} ${pathName == item.path ? `${othClr2} text-[#0053d9]` : `${txt}`} py-2 lg:py-4 w-full 
                       flex  relative
                      flex-col gap-1 lg:gap-1.5 rounded-l-full
-                     items-center hover:bg-white hover:rounded-l-full transition duration-700 hover:text-[#0053d9] `} key={item.id} href={item.path}>
-                            <span className='text-xl'>{item.ico}</span>
-                            <span className='text-lg text-center'>{item.title}</span>
+                     items-center hover:${othClr2} hover:rounded-l-full transition duration-700 hover:text-[#0053d9] `} key={item.id} href={item.path}>
+                            <span className='text-2xl'>{item.ico}</span>
+                            <span className='text-[19px] text-center'>{item.title}</span>
                             <div className={`${item.count !=null ? (item.count > 0 ? "block" : "hidden") : "hidden"} absolute flex items-center justify-center w-5 h-5 rounded-full bg-red-500 left-6 top-2`}>{item.count!=null ? item.count : null}</div>
                     </Link>
                 )

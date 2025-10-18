@@ -27,6 +27,7 @@
   color: #0154c1;
 } */
 .loading {
+  color: #486c87;
   animation: rotate 2.5s linear infinite;
 }
 @keyframes rotate {

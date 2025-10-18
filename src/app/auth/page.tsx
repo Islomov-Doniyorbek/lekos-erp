@@ -19,10 +19,11 @@ const Auth: React.FC = () => {
  
 
  const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  try {
-    const userData = await login(username, password);
-    console.log("User info:", userData);
+   e.preventDefault();
+   setBtnLoader(true)
+   try {
+     const userData = await login(username, password);
+     console.log("User info:", userData);
     setBtnLoader(false)
     setIsSuccess(true)
     
@@ -30,6 +31,8 @@ const Auth: React.FC = () => {
       router.push("/sales");
     }, 1000);
   } catch (err: unknown) {
+    setBtnLoader(true)
+    
     if (err instanceof Error) {
       alert(err.message); 
       console.log(err);
@@ -62,11 +65,11 @@ const handleRegister = async (e: React.FormEvent) => {
   const [isVerify, setIsVerify] = useState(false)
 
   
-
+  
   return (
     <div className='w-full min-h-screen'>
       <div className="w-full h-full grid grid-cols-1 md:grid-cols-2">
-        <div className="col h-screen hidden md:flex justify-center items-center bg-[#488487]">
+        <div className="col h-screen hidden md:flex justify-center items-center bg-[#0f3a57]">
           <h1 className='text-7xl text-zinc-200'>
             LekosERP
           </h1>

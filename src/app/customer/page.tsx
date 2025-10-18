@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import CustomLayout from '../customLayout';
-import { FaCheckCircle, FaEdit, FaPlusCircle, FaSave, FaTimes } from 'react-icons/fa';
+import { FaCheckCircle, FaEdit, FaPlusCircle, FaSave, FaTimes, FaTrash, FaTrashAlt } from 'react-icons/fa';
 import { MdAddToQueue, MdCheck, MdClose, MdEdit } from 'react-icons/md';
 import { FaCircle } from 'react-icons/fa6';
 import { useM } from '../context';
 import api from '../auth';
 import { useCounterparties } from '../api/useRequest';
+import { formatAmount } from '../formatter';
 
 /** ====== Types ====== */
 type AgentType = 'customer' | 'supplier';
@@ -43,7 +44,7 @@ const Page: React.FC = () => {
   });
   const [saveLoading, setSaveLoading] = useState<number | null>(null);
   
-  const { bg2, txt, mainBg } = useM();
+  const { table, activeRow, txt } = useM();
 
   const {data, isLoading, error} = useCounterparties("customer") 
   
@@ -223,7 +224,7 @@ Status: ${row.status?.status || 0}
           className="p-2 text-lg text-red-500 hover:bg-red-200 transition rounded-full"
           title="O'chirish"
         >
-          <MdClose />
+          <FaTrashAlt />
         </button>
       </div>
     );
@@ -235,11 +236,11 @@ Status: ${row.status?.status || 0}
         <div className="title mb-4 text-2xl font-semibold">Список клиентов</div>
         <div className="overflow-x-auto border-[1px] border-gray-100 border-t-0 rounded-2xl">
           <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
-            <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
+            <thead className={`${table} ${txt} uppercase tracking-wide`}>
               <tr>
                 <th className="px-3 py-3 text-left">#</th>
                 <th className="px-3 py-3 text-left">Клиент</th>
-                <th className="px-3 py-3 text-left">ННН</th>
+                <th className="px-3 py-3 text-left">ИНН</th>
                 <th className="px-3 py-3 text-left">Номер</th>
                 <th className="px-3 py-3 text-left">Био</th>
                 <th className="px-3 py-3 text-left">Дебит</th>
@@ -248,7 +249,7 @@ Status: ${row.status?.status || 0}
               </tr>
             </thead>
 
-            <tbody className={`divide-y divide-gray-200 ${txt}`}>
+            <tbody className={`divide-y divide-gray-200`}>
               {isLoading ? (
                 <tr>
                   <td colSpan={8} className="py-3 text-center text-gray-500">
@@ -259,8 +260,7 @@ Status: ${row.status?.status || 0}
                 rows.map((row, idx) => (
                   <tr
                     key={row.id}
-                    className={`${mainBg === "bg-gray-950" ? "text-white" : "text-black"
-                      } hover:text-black hover:bg-emerald-50 transition ${editingId === row.id ? 'bg-yellow-50' : ''}`}
+                    className={` hover:bg-[#cbe5f6] transition ${editingId === row.id ? 'bg-yellow-50' : ''}`}
                   >
                     <td className="px-3 py-2">{idx + 1}</td>
                     <td className="px-3 py-2">
@@ -281,12 +281,12 @@ Status: ${row.status?.status || 0}
                     </td>
                     <td className="px-3 py-2 text-green-600">
                       {row.balance && row.balance > 0
-                        ? row.balance.toLocaleString("uz-UZ").replace(/,/g, " ")
+                        ? formatAmount(Number(row.balance))
                         : "0"}
                     </td>
                     <td className="px-3 py-2 text-red-600">
                       {row.balance && row.balance < 0
-                        ? Math.abs(row.balance).toLocaleString("uz-UZ").replace(/,/g, " ")
+                        ?  formatAmount(Number(Math.abs(row.balance)))
                         : "0"}
                     </td>
                     <td className="px-3 py-2">

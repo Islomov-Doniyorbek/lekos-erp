@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
 import { MdCheck, MdClose, MdEdit } from 'react-icons/md'
-import { FaArrowAltCircleDown, FaArrowAltCircleUp, FaPlus, FaPlusCircle, FaTrash } from 'react-icons/fa'
+import { FaArrowAltCircleDown, FaArrowAltCircleUp, FaPlus, FaPlusCircle, FaTrash, FaTrashAlt } from 'react-icons/fa'
 import type { components, paths } from "../../../types";
 import api from '../auth'
 import { useM } from '../context'
@@ -601,14 +601,14 @@ useEffect(() => {
 
 
   // const { totalDebit, totalKredit } = calculateTotals();
-  const {bg, bg2, txt} = useM()
+  const {table, innerTable, txt} = useM()
   return (
     <CustomLayout>
       <div className="w-full p-6 max-h-screen overflow-y-auto">
         <div className="title mb-4 text-2xl font-semibold">Список договоров на покупку</div>
         <div className="overflow-x-auto border-[1px] border-gray-100 border-t-0 rounded-2xl">
           <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
-            <thead className={`${bg2} ${txt} uppercase tracking-wide`}>
+            <thead className={`${table} ${txt} uppercase tracking-wide`}>
               <tr>
                 <th className='text-left px-3 py-3'>#</th>
                 <th className='text-left px-3 py-3'>Поставщик</th>
@@ -658,7 +658,7 @@ useEffect(() => {
                     onChange={handleChange}
                     className={`${!valSupplier ? "bg-gray-400" : "bg-amber-50"} border rounded-sm text-left px-3 py-1.5 w-full`} 
                     name="stir" 
-                    placeholder='ННН'  
+                    placeholder='ИНН'  
                     type="text" 
                   />   
                 </td>
@@ -708,7 +708,7 @@ useEffect(() => {
                 rows.map((item, i) => (
                 <React.Fragment key={item.id}>
                   {/* Ko'rinadigan qator */}
-                  <tr onClick={() => {toggleInnerTable(item.id);  setDogDate(item.date); console.log(item.date);}} className={`${isEditRow && editRowId === item.id ? "hidden" : "table-row"} border-b border-gray-200 border-t hover:bg-emerald-100`}>
+                  <tr onClick={() => {toggleInnerTable(item.id);  setDogDate(item.date); console.log(item.date);}} className={`${isEditRow && editRowId === item.id ? "hidden" : "table-row"} border-b border-gray-200 border-t hover:bg-[#cbe5f6]`}>
                     <td className='text-left px-3 py-2 relative overflow-hidden'>
                       {i + 1}
                       <div className={`${isEditRowStatus && editRowId === item.id ? "block" : "hidden"} h-10 w-2 bg-yellow-500 absolute -top-2 left-2 rotate-45`}></div>
@@ -739,7 +739,7 @@ useEffect(() => {
                         <MdEdit onClick={() => editRow(item)} />
                       </button>
                       <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-red-500'>
-                        <FaTrash onClick={() => deletePurchaseDeal(item.id)} />
+                        <FaTrashAlt onClick={() => deletePurchaseDeal(item.id)} />
                       </button>
                     </td>
                   </tr>
@@ -803,7 +803,7 @@ useEffect(() => {
                   <tr className={`${item.id === innerTableId ? "table-row" : "hidden"}`}>
                     <td className='px-2 py-6 bg-[#f0ffff]' colSpan={7}>
                       <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl overflow-hidden">
-                        <thead className={`${bg} text-white uppercase tracking-wide`}>
+                        <thead className={`${innerTable} text-white uppercase tracking-wide`}>
                           <tr>
                               <th className='text-left px-3 py-3'>#</th>
                               <th className='text-left px-3 py-3'>Тип</th>
@@ -825,7 +825,7 @@ useEffect(() => {
                           
 
 
-                          <tr className={`${isInputInRow ? "table-row" : "hidden"} border-b border-t`}>
+                          <tr className={`${isInputInRow ? "table-row" : "hidden"}  border-b border-t`}>
                             <td></td>
                             <td>
                               <select 
@@ -897,7 +897,7 @@ useEffect(() => {
                             
                             <React.Fragment key={doc.id}>
                               {/* Ko'rinadigan hujjat qatori */}
-                              <tr className={`${isEditInRow && editInRowId === doc.id ? "hidden" : "table-row"} border-b border-t hover:bg-emerald-100`}>
+                              <tr className={`${isEditInRow && editInRowId === doc.id ? "hidden" : "table-row"} border-b border-t hover:bg-[#cbe5f6]`}>
                                 <td className='text-left px-3 py-3'>{index + 1}</td>
                                 <td className='text-left px-3 py-3'>
                                   {doc.move_type === "in" ? <span>&#8601; Счет-фактура</span> : <span>&#8599; Платежное поручение</span>}
@@ -918,7 +918,7 @@ useEffect(() => {
                                     <MdEdit onClick={() => editInRow(doc)} />
                                   </button>
                                   <button className='cursor-pointer flex items-center justify-center w-8 h-8 text-xl text-red-500'>
-                                    <FaTrash onClick={() => deleteDocument(doc.id)} />
+                                    <FaTrashAlt onClick={() => deleteDocument(doc.id)} />
                                   </button>
                                 </td>
                               </tr>
@@ -1010,7 +1010,7 @@ useEffect(() => {
               ))
               ) : (
                 <tr>
-                  <td colSpan={8} className='text-center py-3 text-gray-500'>У вас нет зарегистрированных договоров.</td>
+                  <td colSpan={7} className='text-center py-3 text-gray-500'>{!isLoadingCP ? "У вас нет зарегистрированных договоров" : "Загрузка..."}</td>
                 </tr>
               )}
             </tbody>
