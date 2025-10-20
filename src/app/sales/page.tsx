@@ -2,14 +2,18 @@
 import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
 import { MdCheck, MdClose, MdEdit } from 'react-icons/md'
-import { FaArrowAltCircleDown, FaArrowAltCircleUp, FaPlus, FaPlusCircle, FaTrash, FaTrashAlt } from 'react-icons/fa'
+import { FaArrowAltCircleDown, FaArrowAltCircleUp, FaCheckCircle, FaCircle, FaPlus, FaPlusCircle, FaTrash, FaTrashAlt } from 'react-icons/fa'
 import type { components, paths } from "../../../types";
 import api from '../auth'
 import { useM } from '../context'
 import { formatAmount, formatDate } from '../formatter'
 import { info } from 'console'
-import { useContracts, useCounterparties2 } from '../api/useRequest'
+import { useContracts, useCounterparties, useCounterparties2 } from '../api/useRequest'
 import { useQueryClient } from '@tanstack/react-query'
+import TableWrap from '@/components/tableWrap'
+import Table from '@/components/table'
+import Thead from '@/components/thead'
+import Tbody from '@/components/tbody'
 
 interface Mijoz {
   id: number;
@@ -114,7 +118,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
     comment: ""
   })
 
-  const {data: dataCP, isLoading: isLoadingCP, error: errorCP} = useCounterparties2("customer")
+  const {data: dataCP, isLoading: isLoadingCP, error: errorCP} = useCounterparties("customer")
   const {data: dataC, isLoading: isLoadingC, error: errorC} = useContracts("sales")
   const queryClient = useQueryClient()
    useEffect(() => {
@@ -591,15 +595,33 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
   // Debit va kredit summalarini hisoblash - SOTUvLAR UCHUN
   
 
-  const {table, innerTable, activeRow, activeInRow, txt} = useM()
+  const {table, innerTable, txt} = useM()
+  const [isActive, setIsActive] = useState(false)
+  const bitim = [
+    "#",
+    "Клиент",
+    "Дата",
+    "Номер договора",
+    "Дебит",
+    "Кредит",
+    `Опции `,
+  ]
   return (
     <CustomLayout>
       <div className='w-full p-6 max-h-screen overflow-y-auto'>
-        <div className="title mb-4 text-2xl font-semibold">Список договоров на продажу</div>
-        <div className="overflow-x-auto border-[1px] border-gray-100 border-t-0 rounded-2xl">
-          <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
-            <thead className={`${table} ${txt} uppercase tracking-wide`}>
-              <tr>
+        <div className="title mb-2 flex justify-between">
+          <h1 className='text-2xl font-semibold'>{isActive ? "Список клиентов" : "Список договоров на продажу"}</h1>
+          <div className="switch  inline-block">
+            <button onClick={()=>setIsActive(false)} className={`${!isActive ? `${table} text-gray-50` : "bg-gray-300 text-blue-600"} w-[50px] h-[30px] rounded-l-full cursor-pointer `}>пр</button>
+            <button onClick={()=>setIsActive(true)} className={`${!isActive ? "bg-gray-300 text-blue-600" : `${table} text-gray-50`} w-[50px] h-[30px] rounded-r-full cursor-pointer `}>кл</button>
+          </div>
+        </div>
+        <TableWrap>
+          <Table>
+            <Thead>
+              {
+                !isActive ? (
+                  <tr>
                 <th className='text-left px-3 py-3 w-[5%]'>#</th>
                 <th className='text-left px-3 py-3 w-[25%]'>Клиент</th>
                 <th className='text-left px-3 py-3 w-[10%]'>Дата</th>
@@ -614,11 +636,23 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                     onClick={() => setIsInputRow(prev => !prev)} 
                   />
                 </th>
-              </tr>
-            </thead>
-            <tbody>
-              
-              <tr className={`${isInputRow ? "table-row" : "hidden"}`}>
+                  </tr>
+                ) : (<tr>
+                              <th className="px-3 py-3 text-left">#</th>
+                              <th className="px-3 py-3 text-left">Клиент</th>
+                              <th className="px-3 py-3 text-left">ИНН</th>
+                              <th className="px-3 py-3 text-left">Номер</th>
+                              <th className="px-3 py-3 text-left">Био</th>
+                              <th className="px-3 py-3 text-left">Дебит</th>
+                              <th className="px-3 py-3 text-left">Кредит</th>
+                              <th className="px-3 py-3 flex items-center justify-end gap-1">Опции <FaPlusCircle className='cursor-pointer text-2xl'/></th>
+              </tr>)
+              }
+            </Thead>
+            <Tbody>
+              {!isActive ? (
+                <>
+                  <tr className={`${isInputRow ? "table-row" : "hidden"}`}>
                 <td className='text-left px-3 py-3'>
                   <span className={`${valCustomer ? "inline-block" : "hidden"} text-blue-700 font-semibold text-[10px]`}>
                     Новый
@@ -790,7 +824,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
 
 
                   <tr className={`${item.id === innerTableId ? "table-row" : "hidden"}`}>
-                    <td className='px-2 py-6 bg-[#f0ffff]' colSpan={7}>
+                    <td className=' py-6 bg-[#f0ffff]' colSpan={7}>
                       <table className="border-collapse border border-gray-200 w-full text-sm shadow-md rounded-xl overflow-hidden">
                         <thead className={`${innerTable} text-white uppercase tracking-wide`}>
                           <tr>
@@ -810,8 +844,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                             </th>
                           </tr>
                         </thead>
-                        <tbody>
-                          {/* Yangi hujjat qo'shish formasi - YANGILANDI */}
+                        <Tbody>
                           <tr className={`${isInputInRow ? "table-row" : "hidden"} border-b border-t`}>
                             <td></td>
                             <td>
@@ -983,7 +1016,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                             </td>
                             <td className='text-right px-3 py-3'></td>
                           </tr>
-                        </tbody>
+                        </Tbody>
                       </table>
                     </td>
                   </tr>
@@ -994,9 +1027,80 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
                   <td colSpan={7} className='text-center py-3 text-gray-500'>{!isLoadingCP ? "У вас нет зарегистрированных договоров" : "Загрузка..."}</td>
                 </tr>
               )}
-            </tbody>
-          </table>
-        </div>
+                </>
+              ) : (
+                <>
+                  {isLoadingCP ? (
+                                  <tr>
+                                    <td colSpan={8} className="py-3 text-center text-gray-500">
+                                      Загрузка...
+                                    </td>
+                                  </tr>
+                                ) : mijozlar.length > 0 ? (
+                                  mijozlar.map((row, idx) => (
+                                    <tr
+                                      key={row.id}
+                                      className={` hover:bg-[#cbe5f6] transition `}
+                                    >
+                                      <td className="px-3 py-2">{idx + 1}</td>
+<td className="px-3 py-2">
+                                      <div className="flex items-center gap-2">
+                                        {row.balance > 0 ? <FaCircle className='text-emerald-500 text-[12px]' /> : ""}
+                                        {row.balance < 0 ? <FaCircle className='text-red-500 text-[12px]' /> : ""}
+                                        {row.balance == 0 ? <FaCheckCircle className='text-blue-500 text-[12px]' /> : ""}
+                                        {/* <FaCircle className="text-orange-400" /> */}
+                                        {row.name}
+                                      </div>
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      {row.tin ? row.tin : "Физ. лицо"}
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      {row.phone ? row.phone : "+998 00 000 00 00"}
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      {row.description ? row.description : "Поставщик"}
+                                    </td>
+                                      <td className="px-3 py-2 text-green-600">
+                                        {row.balance && row.balance > 0
+                                          ? formatAmount(Number(row.balance))
+                                          : "0"}
+                                      </td>
+                                      <td className="px-3 py-2 text-red-600">
+                                        {row.balance && row.balance < 0
+                                          ?  formatAmount(Number(Math.abs(row.balance)))
+                                          : "0"}
+                                      </td>
+                                      <td className="px-3 py-2">
+                                        <div className="flex justify-end gap-1 items-center">
+                                                  <button 
+                                                    className="p-2 text-lg text-green-500 hover:bg-green-200 transition rounded-full disabled:opacity-50"
+                                                    title="Saqlash"
+                                                  ><MdEdit className="text-yellow-500" />
+                                                  </button>
+                                                  <button 
+                                                    className="p-2 text-lg text-red-500 hover:bg-red-200 transition rounded-full"
+                                                    title="Bekor qilish"
+                                                  >
+                                                    <FaTrashAlt className="text-red-700" />
+                                                  </button>
+                                                </div>
+                                      </td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan={8} className="py-3 text-center text-gray-500">
+                                      У вас нет зарегистрированных клиентов.
+                                    </td>
+                                  </tr>
+                                )}
+                </>
+              )}
+
+            </Tbody>
+          </Table>
+        </TableWrap>
       </div>
     </CustomLayout>
   )

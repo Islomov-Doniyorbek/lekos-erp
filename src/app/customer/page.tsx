@@ -49,22 +49,6 @@ const Page: React.FC = () => {
   const {data, isLoading, error} = useCounterparties("customer") 
   
 
-
-  // const getData = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const res = await api.get(
-  //       "https://fast-simple-crm.onrender.com/api/v1/counterparties/with-balance?type=customer"
-  //     ); 
-  //     setRows(res.data);
-  //   } catch (error) {
-  //     console.error("Xatolik:", error);
-  //     alert("Ma'lumotlarni yuklashda xatolik yuz berdi");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
  useEffect(() => {
   // console.log('Loading:', isLoading)
   // console.log('Data:', data)

@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="overflow-hidden">
+      <body className="overflow-hidden min-h-screen">
         <Providers>
           {children}
         </Providers>

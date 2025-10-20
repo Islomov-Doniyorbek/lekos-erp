@@ -285,6 +285,6 @@ Status: ${row.status?.status || 0}
       </div>
     </CustomLayout>
   );
-};
+}; 
 
 export default Page;

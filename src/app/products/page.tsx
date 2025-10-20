@@ -9,6 +9,10 @@ import { FaCirclePlus } from 'react-icons/fa6';
 import { useM } from '../context';
 import api from '../auth';
 import { format } from 'path';
+import TableWrap from '@/components/tableWrap';
+import Table from '@/components/table';
+import Thead from '@/components/thead';
+import Tbody from '@/components/tbody';
 
 interface Product {
   id: number;
@@ -33,8 +37,8 @@ interface ProductOwners {
 
 const Import = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const {table, innerTable, txt} = useM()
-  
+  const {othClr, innerTable, txt} = useM()
+  const [qoldiq, setQoldiq] = useState(0)
   const [form, setForm] = useState<Product>({
     id: 0,
     name: "",
@@ -177,13 +181,10 @@ const Import = () => {
 
   async function deleteItem(id:number) {
     try {
-      // Alert komponentini ishlatish
       const userConfirmed = window.confirm("Haqiqatan ham bu mahsulotni o'chirmoqchimisiz?");
       if (!userConfirmed) return;
-      
       const res = await api.delete(`https://fast-simple-crm.onrender.com/api/v1/products/${id}`);
       setProduct(prev => prev.filter(item => item.id !== id));
-      
     } catch(error) {
       console.log("O'chirishda xato:", error);
       alert("O'chirishda xatolik yuz berdi");
@@ -195,6 +196,11 @@ const Import = () => {
       const data = await api.get(`https://fast-simple-crm.onrender.com/api/v1/stock-moves/with-counterparty-data?product_id=${id}`)
       console.log(data);
       setProductOwners(data.data)
+      let s=0;
+      data.data.map(item=>{
+        s+=Number(item.quantity * item.price)
+      })
+      setQoldiq(s)
     } catch(error) {
       console.log(error);
     }
@@ -202,42 +208,42 @@ const Import = () => {
 
   return (
     <CustomLayout>
-      <div className='w-full p-6 min-h-screen h-screen overflow-y-auto'>
+      <div className='w-full p-3 min-h-2.5 h-screen overflow-y-auto'>
         <div className="title mb-4 text-2xl font-semibold">Список продуктов</div>
-        <div className="overflow-x-auto border-[1px] pb-6 pt-4 border-gray-100 border-t-0 rounded-2xl">
-          <table className="border-collapse border w-full text-sm shadow-md rounded-xl">
-            <thead className={`${table} ${txt} uppercase tracking-wide`}>
+        <TableWrap>
+          <Table>
+            <Thead>
               <tr>
-                <th className="px-3 py-1  border text-left ">#</th>
-                <th className="px-3 py-1  border text-left">Название</th>
-                <th className="px-3 py-1  border text-left">Ед. изм.</th>
-                <th className="px-3 py-1  border ">
-                  <caption className='w-full flex justify-center'>Prixod</caption>
+                <th className="px-3 py-1  border text-left w-[3%] ">#</th>
+                <th className="px-3 py-1  border text-left w-[13%]">Название</th>
+                <th className="px-3 py-1  border text-left w-[5%]">Ед. изм.</th>
+                <th className=" py-1  border w-[24%] ">
+                  <caption className='w-full flex justify-center py-1 border-b'>Приход</caption>
                   <div className='w-full flex'>
-                    <div  className=' w-1/3 text-left'>Коль.</div>
-                    <div  className=' w-1/3 text-left'>Цена</div>
-                    <div  className=' w-1/3 text-left'>Сумма</div>
+                    <div  className='  px-3 w-1/3 text-left'>Кол.</div>
+                    <div  className='   w-1/3 text-left'>Цена</div>
+                    <div  className='   w-1/3 text-left'>Сумма</div>
                   </div>
                 </th>
-                <th className="px-3 py-1 border ">
-                  <caption className='w-full flex justify-center'>Rasxod</caption>
+                <th className=" py-1 border w-[24%] ">
+                  <caption className='w-full flex justify-center py-1 border-b'>Расход</caption>
                   <div className='w-full flex '>
-                    <div className=' w-1/3 text-left'>Kоль</div>
-                    <div  className=' w-1/3 text-left'>Цена</div>
-                    <div  className=' w-1/3 text-left'>Сумма</div>
+                    <div className='  px-3 w-1/3 text-left'>Kол.</div>
+                    <div  className='   w-1/3 text-left'>Цена</div>
+                    <div  className='   w-1/3 text-left'>Сумма</div>
                   </div>
                 </th>
-                <th className="px-3 py-1 border ">
-                  <caption className='w-full flex justify-center'>Остатка</caption>
+                <th className=" py-1 border w-[24%] ">
+                  <caption className='w-full flex justify-center py-1 border-b'>Остатка</caption>
                   <div className='w-full flex '>
-                    <div  className=' w-1/3 text-left'>Коль.</div>
-                    <div  className=' w-1/3 text-left'>Цена</div>
-                    <div  className=' w-1/3 text-left'>Сумма</div>
+                    <div  className='  px-3 w-1/3 text-left'>Кол.</div>
+                    <div  className='   w-1/3 text-left'>Цена</div>
+                    <div  className='   w-1/3 text-left'>Сумма</div>
                   </div>
                 </th>
                 {/* <th className="px-3 py-1 text-left w-[]">Цена</th>
                 <th className="px-3 py-1 text-left w-[]">Сумма</th> */}
-                <th className="px-3 py-1  border ">
+                <th className="px-3 py-1  border w-[7%] ">
                   <div className='flex items-center justify-end gap-2'>Опции
                   <FaPlusCircle className='cursor-pointer text-2xl' onClick={() => setIsOpen(prev => !prev)}/></div>
                 </th>
@@ -312,11 +318,12 @@ const Import = () => {
                   </button>
                 </td>
               </tr>
-            </thead>
+            </Thead>
             
-            <tbody className={`divide-y divide-gray-200`}>
+            <Tbody>
               {product.length > 0 ? (
-                product.map(item => (
+                product.map((item, i) => (
+                  
                   <React.Fragment key={item.id}>
                     {/* Asosiy qator - inline edit rejimi */}
                     <tr 
@@ -325,11 +332,11 @@ const Import = () => {
                         getStMvs(item.id);
                         setIsInTable(prev => !prev);
                       }} 
-                      className={`hover:bg-[#cbe5f6] transition cursor-pointer
+                      className={`hover:bg-[#cbe5f6] hover:text-blue-800 ${i%2==0 ? othClr : ''} transition cursor-pointer
                       ${isInTable && inTable === item.id ? `${innerTable} text-amber-50` : ""}`}
                     >
                       {/* ID */}
-                      <td className="px-3 py-1 border">{item.id}</td>
+                      <td className="px-3 py-1 border">{i+1}</td>
                       <td className="px-3 py-1 border">
                         <b>
                             {item.name}
@@ -388,7 +395,7 @@ const Import = () => {
                     {/* Ichki jadval */}
                     <tr className={`${isInTable && inTable === item.id ? "table-row" : "hidden"}`}>
                       <td className='px-2 py-6' colSpan={8}>
-                        <table className="border-collapse border w-full text-sm shadow-md rounded-xl">
+                        <Table>
                           <thead className={`${innerTable} ${txt} uppercase tracking-wide`}>
                             <tr>
                               <th className='text-left px-3 py-1'>#</th>
@@ -408,8 +415,8 @@ const Import = () => {
                                     <td className='text-left px-3 py-1'>{i+1}</td>
                                     <td className='text-left px-3 py-1'>
                                       {prdOwn.movement_type === "in" ? 
-                                        <span className='text-2xl'> &#8601;</span> : 
-                                        <span className='text-2xl'>&#8599;</span>}
+                                        <span className='text-3xl text-green-600'> &#8601;</span> : 
+                                        <span className='text-3xl text-red-600'>&#8599;</span>}
                                     </td>
                                     <td className='text-left px-3 py-1'>
                                       <b>{prdOwn.counterparty_name}</b> <br />
@@ -435,10 +442,17 @@ const Import = () => {
                                 <td className='text-center px-3 py-1' colSpan={7}>None</td>
                               </tr>
                             )}
+                            {product.length > 0 ? (
+                                <tr>
+                                    <td className='text-center px-3 py-1' colSpan={6}></td>
+                                    <td className='text-center px-3 py-1'>Sum:{qoldiq}</td>
+                              </tr>
+                            ) : ("")}
                           </tbody>
-                        </table>
+                        </Table>
                       </td>
                     </tr>
+                    
                   </React.Fragment>
                 ))
               ) : (
@@ -448,10 +462,10 @@ const Import = () => {
                   </td>
                 </tr>
               )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </Tbody>
+          </Table>
+        </TableWrap>
+      </div> 
     </CustomLayout>
   )
 }

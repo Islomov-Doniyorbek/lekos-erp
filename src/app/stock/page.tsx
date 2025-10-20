@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import CustomLayout from '../customLayout'
 import { BiEdit } from 'react-icons/bi'
 import { FaArrowAltCircleDown, FaPlusCircle, FaTrashAlt } from 'react-icons/fa'
-import { MdClose, MdCheck, MdCancel, MdEdit } from 'react-icons/md'
+import { MdClose, MdCheck, MdCancel, MdEdit, MdDangerous, MdWarning } from 'react-icons/md'
 import api from '../auth'
 import { useM } from '../context'
 import { TbArrowDownLeft, TbArrowUpRight } from 'react-icons/tb'
@@ -48,7 +48,7 @@ interface FormData {
   product: string,
   sku: string,
   price: number,
-  quantity: number,
+  quantity: string,
   date: string,
   comment: string
 }
@@ -92,7 +92,7 @@ const Products = () => {
     product: "",
     sku: "",
     price: 0,
-    quantity: 0,
+    quantity: "",
     date: new Date().toISOString().split('T')[0],
     comment: ""
   })
@@ -107,7 +107,7 @@ const Products = () => {
       try {
         const [res1, res2] = await Promise.all([
           api.get("https://fast-simple-crm.onrender.com/api/v1/documents/invoices/with-total"),
-          api.get("https://fast-simple-crm.onrender.com/api/v1/products"),
+          api.get("https://fast-simple-crm.onrender.com/api/v1/products/with-quantity"),
         ]);
         
         setFaktura(res1.data)
@@ -162,7 +162,7 @@ const Products = () => {
           name: product?.name || "Noma'lum mahsulot",
           sku: product?.sku || "Noma'lum SKU",
           date: move.date || move.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-          quantity: move.quantity,
+          quantity: Number(move.quantity),
           price: move.price,
           comment: move.comment || "",
           movement_type: move.movement_type
@@ -185,7 +185,7 @@ const Products = () => {
   const startEditingRow = (stockMove: StockMove) => {
     setEditingRows(prev => [...prev.filter(item => item.id !== stockMove.id), {
       id: stockMove.id,
-      quantity: stockMove.quantity,
+      quantity: Number(stockMove.quantity),
       price: stockMove.price,
       comment: stockMove.comment
     }]);
@@ -218,7 +218,7 @@ const Products = () => {
     try {
       // API orqali yangilash
       const updateData = {
-        quantity: editingRow.quantity,
+        quantity: Number(editingRow.quantity),
         price: editingRow.price,
         comment: editingRow.comment
       };
@@ -234,7 +234,7 @@ const Products = () => {
           item.id === id 
             ? { 
                 ...item, 
-                quantity: editingRow.quantity,
+                quantity: Number(editingRow.quantity),
                 price: editingRow.price,
                 comment: editingRow.comment
               }
@@ -347,7 +347,7 @@ const Products = () => {
             document_id: currentDocumentId,
             movement_type: faktura[rowId]?.invoice.move_type || "in",
             date: form.date || new Date().toISOString().split('T')[0],
-            quantity: form.quantity,
+            quantity: Number(form.quantity),
             price: form.price,
             comment: form.comment
           }
@@ -372,7 +372,7 @@ const Products = () => {
             document_id: currentDocumentId,
             name: form.product,
             sku: form.sku,
-            quantity: form.quantity,
+            quantity: Number(form.quantity),
             price: form.price,
             comment: form.comment,
             movement_type: faktura[rowId]?.invoice.move_type || "in"
@@ -391,7 +391,7 @@ const Products = () => {
             product_id: existingProduct.id,
             document_id: currentDocumentId,
             movement_type: faktura[rowId]?.invoice.move_type || "in",
-            quantity: form.quantity,
+            quantity: Number(form.quantity),
             price: form.price,
             comment: form.comment
           }
@@ -407,7 +407,7 @@ const Products = () => {
             document_id: currentDocumentId,
             name: existingProduct.name,
             sku: existingProduct.sku,
-            quantity: form.quantity,
+            quantity: Number(form.quantity),
             price: form.price,
             comment: form.comment,
             movement_type: faktura[rowId]?.invoice.move_type || "in"
@@ -432,7 +432,7 @@ const Products = () => {
           product: "",
           sku: "",
           price: 0,
-          quantity: 0,
+          quantity: "",
           date: new Date().toISOString().split('T')[0],
           comment: ""
         })
@@ -457,7 +457,7 @@ const Products = () => {
       product: "",
       sku: "",
       price: 0,
-      quantity: 0,
+      quantity: "",
       date: new Date().toISOString().split('T')[0],
       comment: ""
     })
@@ -546,8 +546,8 @@ const Products = () => {
                       <td className='text-left px-3 py-3'>
                         {formatAmount(Number(fk.closed_amount))} / {formatAmount(Number(fk.invoice.amount))} сум
                         <br />
-                        <small className="text-green-600 font-semibold">
-                          (Открытая сумма: {formatAmount(Number(fk.open_amount))} сум)
+                        <small className={`${fk.open_amount > 0 ? "text-green-600" : (fk.open_amount < 0 ? "text-red-600" : "text-blue-600")} flex items-center gap-1 font-semibold`}>
+                           {fk.open_amount < 0 ? <MdWarning className='text-[14px]'/> : ""}(Открытая сумма: {formatAmount(Number(fk.open_amount))} сум)
                         </small>
                       </td>
                       <td className='text-left px-3 py-3'>
@@ -612,7 +612,7 @@ const Products = () => {
                                 <datalist id="products">
                                   {products.map(item => (
                                     <option key={item.id} value={item.name}>
-                                      {item.name} ({item.sku})
+                                      {item.name} ({item.sku}) ({item.quantity})
                                     </option>
                                   ))}
                                 </datalist>
@@ -634,6 +634,7 @@ const Products = () => {
                                   className='border rounded-sm text-left px-3 py-1.5 bg-amber-50 w-full'
                                   type="number"
                                   min={0}
+                                  step={0.001}
                                   name='quantity'
                                   placeholder='miqdor'
                                 />

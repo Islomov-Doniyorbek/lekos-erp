@@ -19,6 +19,18 @@ const Header: React.FC = () => {
       othClr2: "bg-[#eef6fc]",
       title: "Standart"
     },
+    {
+      id:1,
+      headerClr: "bg-[#007415]",
+      sidebar: "bg-[#008719]",
+      table: "bg-[#139f2d]",
+      innerTable: "bg-[#3498db]",
+      activeRow: "bg-[#63b0e3]",
+      activeInRow: "bg-[#97caed]",
+      othClr: "bg-[#cbe5f6]",
+      othClr2: "bg-[#eef6fc]",
+      title: "Excel"
+    },
   ]
 
   const [isOpenClrList, setIsOpenClrList] = useState(false)
