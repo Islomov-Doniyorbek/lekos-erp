@@ -612,8 +612,8 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
         <div className="title mb-2 flex justify-between">
           <h1 className='text-2xl font-semibold'>{isActive ? "Список клиентов" : "Список договоров на продажу"}</h1>
           <div className="switch  inline-block">
-            <button onClick={()=>setIsActive(false)} className={`${!isActive ? `${table} text-gray-50` : "bg-gray-300 text-blue-600"} w-[50px] h-[30px] rounded-l-full cursor-pointer `}>пр</button>
-            <button onClick={()=>setIsActive(true)} className={`${!isActive ? "bg-gray-300 text-blue-600" : `${table} text-gray-50`} w-[50px] h-[30px] rounded-r-full cursor-pointer `}>кл</button>
+            <button onClick={()=>setIsActive(false)} className={`${!isActive ? `${table} text-gray-50` : "bg-gray-300 text-blue-600"} w-[50px] h-[30px] rounded-l-full cursor-pointer `}>дог.</button>
+            <button onClick={()=>setIsActive(true)} className={`${!isActive ? "bg-gray-300 text-blue-600" : `${table} text-gray-50`} w-[50px] h-[30px] rounded-r-full cursor-pointer `}>кл.</button>
           </div>
         </div>
         <TableWrap>
