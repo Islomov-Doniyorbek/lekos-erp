@@ -17,6 +17,7 @@ const Auth: React.FC = () => {
   const [btnLoader, setBtnLoader] = useState(false)
   const { login, register} = useM()
  
+  
 
  const handleLogin = async (e: React.FormEvent) => {
    e.preventDefault();
@@ -26,7 +27,7 @@ const Auth: React.FC = () => {
      console.log("User info:", userData);
     setBtnLoader(false)
     setIsSuccess(true)
-    
+    localStorage.setItem("username", username)
     setTimeout(() => {
       router.push("/sales");
     }, 1000);
