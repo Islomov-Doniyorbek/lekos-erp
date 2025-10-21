@@ -7,7 +7,7 @@ import { MdAddToQueue, MdCheck, MdClose, MdEdit } from 'react-icons/md';
 import { FaCircle } from 'react-icons/fa6';
 import { useM } from '../context';
 import api from '../auth';
-import { useCounterparties } from '../api/useRequest';
+import { useCounterparties } from '../queries/useRequest';
 import { formatAmount } from '../formatter';
 
 /** ====== Types ====== */

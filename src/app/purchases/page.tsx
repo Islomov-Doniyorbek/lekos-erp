@@ -11,7 +11,7 @@ import { TbArrowDownLeft } from 'react-icons/tb'
 import { Span } from 'next/dist/trace'
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query'
-import { useContracts, useCounterparties, useCounterparties2 } from '../api/useRequest'
+import { useContracts, useCounterparties, useCounterparties2 } from '../queries/useRequest'
 import TableWrap from '@/components/tableWrap'
 import Table from '@/components/table'
 import Thead from '@/components/thead'
