@@ -879,7 +879,7 @@ useEffect(() => {
                                 className="border rounded-sm text-left px-3 py-1.5 w-full" 
                                 type="text" 
                                 name='doc_num' 
-                                placeholder='Номер договора'
+                                placeholder='Номер документa'
                               />
                             </td>
                             <td>

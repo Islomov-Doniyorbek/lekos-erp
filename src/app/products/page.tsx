@@ -241,8 +241,6 @@ const Import = () => {
                     <div  className='   w-1/3 text-left'>Сумма</div>
                   </div>
                 </th>
-                {/* <th className="px-3 py-1 text-left w-[]">Цена</th>
-                <th className="px-3 py-1 text-left w-[]">Сумма</th> */}
                 <th className="px-3 py-1  border w-[7%] ">
                   <div className='flex items-center justify-end gap-2'>Опции
                   <FaPlusCircle className='cursor-pointer text-2xl' onClick={() => setIsOpen(prev => !prev)}/></div>
@@ -327,69 +325,172 @@ const Import = () => {
                   <React.Fragment key={item.id}>
                     {/* Asosiy qator - inline edit rejimi */}
                     <tr 
-                      onClick={() => {
-                        setInTable(item.id);
-                        getStMvs(item.id);
-                        setIsInTable(prev => !prev);
-                      }} 
                       className={`hover:bg-[#cbe5f6] hover:text-blue-800 ${i%2==0 ? othClr : ''} transition cursor-pointer
                       ${isInTable && inTable === item.id ? `${innerTable} text-amber-50` : ""}`}
                     >
                       {/* ID */}
                       <td className="px-3 py-1 border">{i+1}</td>
+                      
+                      {/* Nom - inline edit */}
                       <td className="px-3 py-1 border">
-                        <b>
-                            {item.name}
-                        </b> <br />
-                        <small><i>{item.sku}</i></small>
+                        {editingId === item.id ? (
+                          <div>
+                            <input
+                            className="w-full rounded-lg border border-blue-300 bg-blue-50 px-2 py-1 
+                                     text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 
+                                     focus:bg-white transition-all duration-200 outline-none"
+                            name="name"
+                            type="text"
+                            value={editForm.name}
+                            onChange={handleEditChange}
+                          />
+                          <input
+                            className="w-full rounded-lg border text-[12px] border-blue-300 bg-blue-50 px-2 py-1 
+                                     text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 
+                                     focus:bg-white transition-all duration-200 outline-none"
+                                     
+                            name="sku"
+                            type="text"
+                            value={editForm.sku}
+                            onChange={handleEditChange}
+                          />
+                          </div>
+                        ) : (
+                          <div onClick={() => {
+                            setInTable(item.id);
+                            getStMvs(item.id);
+                            setIsInTable(prev => !prev);
+                          }}>
+                            <b>{item.name}</b> <br />
+                            <small><i>{item.sku}</i></small>
+                          </div>
+                        )}
                       </td>
-                      <td className="px-3 py-1 border">{item.unit}</td>
+                      
+                      {/* SKU - inline edit */}
                       <td className="px-3 py-1 border">
-                        <div className='flex w-full'>
-                            <p  className=' w-1/3 text-left'>{item.total_incomings}</p>
-                            <p  className=' w-1/3 text-left'>{formatAmount(Number(item.avg_incoming_price))}</p>
-                            <p  className=' w-1/3 text-left'>{formatAmount(Number(item.total_incoming_sum))}</p>
-                        </div>
+                          {editingId === item.id ? (
+                            <input
+                            className="w-full rounded-lg border border-blue-300 bg-blue-50 px-2 py-1 
+                                     text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 
+                                     focus:bg-white transition-all duration-200 outline-none"
+                            name="unit"
+                            type="text"
+                            value={editForm.unit}
+                            onChange={handleEditChange}
+                          />
+                          ) : (
+                            <div onClick={() => {
+                            setInTable(item.id);
+                            getStMvs(item.id);
+                            setIsInTable(prev => !prev);
+                          }}>
+                            {item.unit}
+                          </div>
+                          )}
+                          
                       </td>
+                      
+                      {/* Unit - inline edit */}
                       <td className="px-3 py-1 border">
-                        <div className='flex w-full'>
-                            <p  className=' w-1/3 text-left'>{item.total_outgoings}</p>
-                            <p  className=' w-1/3 text-left'>{formatAmount(Number(item.avg_outgoing_price))}</p>
-                            <p  className=' w-1/3 text-left'>{formatAmount(Number(item.total_outgoing_sum))}</p>
-                        </div>
-                      </td>
-                      <td className="px-3 py-1 border">
-                        <div className='w-full flex'>
-                            <p  className=' w-1/3 text-left'>{item.quantity}</p>
-                            <p  className=' w-1/3 text-left'>{formatAmount(Number(item.price))}</p>
-                            <p  className=' w-1/3 text-left'>{formatAmount(Number(item.quantity * item.price))}</p>
-                        </div>
-                      </td>
-                    <td className=" py-1 border">
-                            <div className='w-full flex justify-end'>
-                                <button 
-                              onClick={() => getStMvs(item.id)}
-                              className="cursor-pointer p-2 text-green-500 text-lg hover:text-emerald-800 hover:bg-green-400 transition rounded-full"
-                              title="Tahrirlash"
-                            >
-                              <FaArrowAltCircleDown />
-                            </button>
-                            <button 
-                              onClick={() => startEditing(item)}
-                              className="cursor-pointer p-2 text-yellow-500 text-lg hover:text-yellow-800 hover:bg-yellow-400 transition rounded-full"
-                              title="Tahrirlash"
-                            >
-                              <MdEdit />
-                            </button>
-                            <button 
-                              onClick={() => deleteItem(item.id)}
-                              className="cursor-pointer p-2 text-red-500 text-lg hover:text-red-800 hover:bg-red-400 transition rounded-full"
-                              title="O'chirish"
-                            >
-                              <FaTrashAlt />
-                            </button>
+                        
+                          <div onClick={() => {
+                            setInTable(item.id);
+                            getStMvs(item.id);
+                            setIsInTable(prev => !prev);
+                          }}>
+                            <div className='flex w-full'>
+                              <p className='w-1/3 text-left'>{item.total_incomings}</p>
+                              <p className='w-1/3 text-left'>{formatAmount(Number(item.avg_incoming_price))}</p>
+                              <p className='w-1/3 text-left'>{formatAmount(Number(item.total_incoming_sum))}</p>
                             </div>
-                          </td>
+                          </div>
+                      </td>
+                      
+                      <td className="px-3 py-1 border">
+                        <div onClick={() => {
+                          setInTable(item.id);
+                          getStMvs(item.id);
+                          setIsInTable(prev => !prev);
+                        }} className='flex w-full'>
+                          <p className='w-1/3 text-left'>{item.total_outgoings}</p>
+                          <p className='w-1/3 text-left'>{formatAmount(Number(item.avg_outgoing_price))}</p>
+                          <p className='w-1/3 text-left'>{formatAmount(Number(item.total_outgoing_sum))}</p>
+                        </div>
+                      </td>
+                      
+                      <td className="px-3 py-1 border">
+                        <div onClick={() => {
+                          setInTable(item.id);
+                          getStMvs(item.id);
+                          setIsInTable(prev => !prev);
+                        }} className='w-full flex'>
+                          <p className='w-1/3 text-left'>{item.quantity}</p>
+                          {editingId === item.id ? (
+                            
+                            <input
+                            className="rounded-lg border border-blue-300 bg-blue-50 px-0.5 py-1  
+                                     text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 
+                                     focus:bg-white transition-all duration-200 outline-none"
+                            name="price"
+                            type="text"
+                            value={editForm.price}
+                            onChange={handleEditChange}
+                          />
+                          ) : (<p className='w-1/3 text-left'>{formatAmount(Number(item.price))}</p>)}
+                          
+                          <p className='w-1/3 text-left'>{formatAmount(Number(item.quantity * item.price))}</p>
+                        </div>
+                      </td>
+                      
+                      <td className="py-1 border">
+                        <div className='w-full flex justify-end'>
+                          {editingId === item.id ? (
+                            // Edit rejimidagi tugmalar
+                            <>
+                              <button 
+                                onClick={updateProduct}
+                                className="cursor-pointer p-2 text-green-500 text-lg hover:text-green-800 hover:bg-green-400 transition rounded-full"
+                                title="Saqlash"
+                              >
+                                <MdSave />
+                              </button>
+                              <button 
+                                onClick={cancelEditing}
+                                className="cursor-pointer p-2 text-red-500 text-lg hover:text-red-800 hover:bg-red-400 transition rounded-full"
+                                title="Bekor qilish"
+                              >
+                                <MdCancel />
+                              </button>
+                            </>
+                          ) : (
+                            // Oddiy rejimdagi tugmalar
+                            <>
+                              <button 
+                                onClick={() => getStMvs(item.id)}
+                                className="cursor-pointer p-2 text-green-500 text-lg hover:text-emerald-800 hover:bg-green-400 transition rounded-full"
+                                title="Tafsilotlar"
+                              >
+                                <FaArrowAltCircleDown />
+                              </button>
+                              <button 
+                                onClick={() => startEditing(item)}
+                                className="cursor-pointer p-2 text-yellow-500 text-lg hover:text-yellow-800 hover:bg-yellow-400 transition rounded-full"
+                                title="Tahrirlash"
+                              >
+                                <MdEdit />
+                              </button>
+                              <button 
+                                onClick={() => deleteItem(item.id)}
+                                className="cursor-pointer p-2 text-red-500 text-lg hover:text-red-800 hover:bg-red-400 transition rounded-full"
+                                title="O'chirish"
+                              >
+                                <FaTrashAlt />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
                     </tr>
 
                     {/* Ichki jadval */}
@@ -439,15 +540,15 @@ const Import = () => {
                               })
                             ) : (
                               <tr>
-                                <td className='text-center px-3 py-1' colSpan={7}>None</td>
+                                <td className='text-center px-3 py-2 text-[16px] text-gray-500' colSpan={7}>Пустой</td>
                               </tr>
                             )}
-                            {product.length > 0 ? (
+                            {/* {product.length > 0 ? (
                                 <tr>
                                     <td className='text-center px-3 py-1' colSpan={6}></td>
                                     <td className='text-center px-3 py-1'>Sum:{qoldiq}</td>
                               </tr>
-                            ) : ("")}
+                            ) : ("")} */}
                           </tbody>
                         </Table>
                       </td>

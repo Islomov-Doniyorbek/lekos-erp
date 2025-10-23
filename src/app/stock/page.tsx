@@ -8,6 +8,7 @@ import { MdClose, MdCheck, MdCancel, MdEdit, MdDangerous, MdWarning } from 'reac
 import api from '../auth'
 import { useM } from '../context'
 import { TbArrowDownLeft, TbArrowUpRight } from 'react-icons/tb'
+import { log } from 'console'
 
 interface Faktura {
   closed_amount: number,
@@ -581,6 +582,7 @@ const Products = () => {
                               <th className='text-left px-3 py-3'>#</th>
                               <th className='text-left px-3 py-3'>Продукт</th>
                               <th className='text-left px-3 py-3'>Количество</th>
+                              {/* <th className='text-left px-3 py-3'>Ед. изм.</th> */}
                               <th className='text-left px-3 py-3'>Цена</th>
                               {/* <th></th> */}
                               <th className='text-left px-3 py-3'>Сумма</th>
@@ -639,6 +641,9 @@ const Products = () => {
                                   placeholder='miqdor'
                                 />
                               </td>
+                              {/* <td className='py-1.5'>
+                                
+                              </td> */}
                               <td className='py-1.5 relative'>
                                 <input
                                   value={form.price}
@@ -696,7 +701,7 @@ const Products = () => {
                             {/* Mavjud stock move lar ro'yxati */}
                             {getStockMovesForCurrentFaktura(fk.invoice.id).map((item, index) => {
                               const isEditing = isEditingRow(item.id);
-                              
+                              console.log(item)
                               return (
                                 <tr key={item.id} className='hover:bg-[#cbe5f6]'>
                                   <td className='flex flex-col px-3 py-3'>
@@ -721,6 +726,10 @@ const Products = () => {
                                       <span>{item.quantity}</span>
                                     )}
                                   </td>
+                                  {/* <td className='text-left px-3 py-3'>
+                                    
+                                      <span>{item.unit}</span>
+                                  </td> */}
                                   
                                   {/* Narx */}
                                   <td className='text-left px-3 py-3'>
