@@ -502,6 +502,8 @@ useEffect(() => {
       });
 
       setIsInputInRow(false);
+      
+      window.location.reload();
       // router.refresh()
     } catch (error) {
       console.log(error);

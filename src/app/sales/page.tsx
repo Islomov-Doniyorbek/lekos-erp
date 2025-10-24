@@ -492,6 +492,7 @@ const formattedToday = `${yyyy}-${mm}-${dd}`;
       });
 
       setIsInputInRow(false);
+      window.location.reload();
 
     } catch (error) {
       console.log(error);
