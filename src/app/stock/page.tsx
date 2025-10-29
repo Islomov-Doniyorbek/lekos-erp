@@ -9,6 +9,10 @@ import api from '../auth'
 import { useM } from '../context'
 import { TbArrowDownLeft, TbArrowUpRight } from 'react-icons/tb'
 import { log } from 'console'
+import Thead from '@/components/thead'
+import Tbody from '@/components/tbody'
+import Table from '@/components/table'
+import TableWrap from '@/components/tableWrap'
 
 interface Faktura {
   closed_amount: number,
@@ -503,9 +507,9 @@ const Products = () => {
     <CustomLayout>
       <div className="w-full p-6 max-h-screen overflow-y-auto">
         <div className="title mb-4 text-2xl font-semibold">Список счетов-фактур по договорам</div>
-        <div className="overflow-x-auto border-[1px] border-gray-100 border-t-0 rounded-2xl">
-          <table className="border-collapse border  w-full text-sm shadow-md rounded-xl ">
-            <thead className={`${table} ${txt} uppercase tracking-wide`}>
+        <TableWrap>
+          <Table>
+            <Thead>
               <tr>
                 <th className='text-left px-3 py-3'>#</th>
                 <th className='text-left px-3 py-3'>Тип</th>
@@ -515,8 +519,8 @@ const Products = () => {
                 <th className='text-left px-3 py-3'>Статус</th>
                 <th className='text-right px-3 py-3'></th>
               </tr>
-            </thead>
-            <tbody>
+            </Thead>
+            <Tbody>
               {faktura.length > 0 ? (faktura.map((fk, id) => {
                 const fakturaTotal = calculateTotalForFaktura(fk.invoice.id);
                 const completionPercentage = fk.invoice.amount > 0 ? 
@@ -556,7 +560,7 @@ const Products = () => {
                       </td>
                       <td className='text-left px-3 py-3'>
                         <div className="flex items-center gap-2">
-                          <span>{completionPercentage}% yopilgan</span>
+                          <span>{completionPercentage}% закрыто</span>
                           <div className="w-20 bg-gray-200 rounded-full h-2">
                             <div 
                               className={` h-2 rounded-full ${completionPercentage > 100 ? "bg-red-600" : "bg-green-600"}`} 
@@ -597,8 +601,8 @@ const Products = () => {
                             <tr className={`${fk.open_amount == 0 ? "hidden" : "table-row"}`}>
                               <td className='text-left px-3 py-3'>
                                 {isNewProduct && (
-                                  <span className="inline-block text-blue-700 font-semibold text-[10px]">
-                                    Новый
+                                  <span className={`inline-block ${fk.invoice.move_type==="out" ? "text-red-700" : "text-blue-700"}  font-semibold text-[10px]`}>
+                                    {fk.invoice.move_type==="out" ? "Невозможно!" : "Новый"}
                                   </span>
                                 )}
                               </td>
@@ -673,8 +677,9 @@ const Products = () => {
                                 <div className="flex gap-2 justify-end">
                                   <button 
                                     onClick={handleAddProduct}
-                                    className='cursor-pointer w-8 h-8 text-xl text-green-600 hover:text-green-800'
+                                    className={`cursor-pointer w-8 h-8 text-xl hover:text-green-800 ${fk.invoice.move_type === "out" && isNewProduct ? "text-gray-600" : "text-green-600"}`}
                                     title="Qo'shish"
+                                    disabled={fk.invoice.move_type === "out" && isNewProduct}
                                   >
                                     <FaPlusCircle />
                                   </button>
@@ -849,9 +854,9 @@ const Products = () => {
                   <td colSpan={6} className='text-center py-3 text-gray-500'>У вас нет зарегистрированных счетов-фактур.</td>
                 </tr>
               )}
-            </tbody>
-          </table>
-        </div>
+            </Tbody>
+          </Table>
+        </TableWrap>
       </div>
     </CustomLayout>
   )

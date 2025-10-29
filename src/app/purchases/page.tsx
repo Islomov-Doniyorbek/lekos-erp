@@ -135,6 +135,8 @@ useEffect(() => {
 
   // Mijozlarni set qilish
   setSuppliers(dataCP)
+  console.log(dataCP);
+  
 
   // Mijozlar va shartnomalarni birlashtirish
   const merged = dataCP.flatMap((supplier: Supplier) => {
@@ -250,7 +252,7 @@ useEffect(() => {
               comment: form.izoh
         }];
       })
-      queryClient.setQueryData(['counterparties2', 'supplier'], (oldData: any) => {
+      queryClient.setQueryData(['counterparties', 'supplier'], (oldData: any) => {
         if (!oldData) return [{
               type: "customer",
               name: form.supplier,
@@ -1049,8 +1051,8 @@ useEffect(() => {
                                    Загрузка...
                                   </td>
                                 </tr>
-                              ) : rows.length > 0 ? (
-                                rows.map((row, idx) => (
+                              ) : suppliers.length > 0 ? (
+                                suppliers.map((row, idx) => (
                                   <tr
                                     key={row.id}
                                     className={` hover:bg-[#cbe5f6] transition`}

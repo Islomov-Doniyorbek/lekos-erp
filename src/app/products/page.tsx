@@ -326,7 +326,7 @@ const Import = () => {
                     {/* Asosiy qator - inline edit rejimi */}
                     <tr 
                       className={`hover:bg-[#cbe5f6] hover:text-blue-800 ${i%2==0 ? othClr : ''} transition cursor-pointer
-                      ${isInTable && inTable === item.id ? `${innerTable} text-amber-50` : ""}`}
+                      ${isInTable && inTable === item.id ? `${innerTable} ` : ""}`}
                     >
                       {/* ID */}
                       <td className="px-3 py-1 border">{i+1}</td>
